@@ -5,7 +5,7 @@ SentimentCorpusPath=$HOME/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_ne
 HunTokenPath=$HOME/NLPtools/HunToken/huntoken-1.6/bin/huntoken
 HunPosTagPath=$HOME/NLPtools/hunpos/hunpos-1.0-linux/hunpos-tag
 SzegedModelPath=$HOME/NLPtools/hunpos/hu_szeged_kr.model
-XmlParserPath=$HOME/NLPtools/SentAnalysisHUN-master/real_project/xmlparser.py
+XmlParserPath=$HOME/Desktop/SentimentAnalysisHUN/src/xmlparser.py
 OcamorphBinPath=$HOME/NLPtools/HunMorph/ocamorph/adm/morphdb_hu.bin
 
 # Output files

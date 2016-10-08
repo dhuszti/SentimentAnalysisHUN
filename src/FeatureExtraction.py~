@@ -79,9 +79,9 @@ def n_gram(disambiguatedArray, PreprocessedCorpusPath, n_gram_number, n_gram_ono
 	iterator = 0
 	for line in disambiguatedArray:
 		elements = []
-		for element in line[StartList[iterator]:EntityStartList[iterator]]:
+		for element in line[StartList[iterator]:EntityStartList[line]]:
 			elements.append(element)
-		for element in line[EntityEndList[iterator]:EndList[iterator]]:
+		for element in line[EntityEndList[iterator]:EndList[line]]:
 			elements.append(element)
 		print elements
 		n_gram_Array.append(elements)
