@@ -6,31 +6,21 @@ from stop_words import get_stop_words
 from Morphological_Disambiguation import StemmedForm
 from Morphological_Disambiguation import MorphologicalDisambiguation
 
-''' This file is responsible for
-	- span interval determination around entity 
-	- filter sentence to this span interval
-	- stop word filtering
-'''
 
-'''
-
-'''
-
-
-def StopWordFilter(sentencesArray, stopwordsFilePath):
+def StopWordFilter(sentencesArray):
+	# Stopwords in unicode format	
 	stopwords = get_stop_words('hu')
-	stop = []
-	for word in stopwords:
-		stop.append(word.encode('utf8'))
-	#stopwordsfile = open(stopwordsFilePath, 'r')	
-	#for line in stopwordsfile:
-	#	stopwords.append(line.replace('\n',''))
-		
+	
+	# These words are missing from stopwords
+	stopwords.append('is')
+	stopwords.append('le')
+
 	filteredArray = []
 	for sentence in sentencesArray:
 		filteredSentence = []
 		for word in sentence:
-			if word not in stop:
+			# Decode word to unicode to capable of doing comparison
+			if word.decode('latin2') not in stopwords:
 				filteredSentence.append(word)
 		filteredArray.append(filteredSentence)
 				
@@ -73,25 +63,29 @@ def StopWordFilter(SentencesArray, TFIDFthreshold, stopwordsFilePath):
 	return filteredArray
 '''
 
-def NamedEntityRecognition():
+def NER_filtering():
 	
-	return 
+	return NER
 	
 
 def main():
 	MorphResultsFilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/morph_ki.txt'
 	PreprocessedCorpusPath='/home/osboxes/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_new.csv'
 	TFIDFthreshold=0.4	
-	StopwordsPath='/home/osboxes/Desktop/SentimentAnalysisHUN/resources/stopwords.txt'
+	#StopwordsPath='/home/osboxes/Desktop/SentimentAnalysisHUN/resources/stopwords.txt'
 	IntervalNumber=5
 	OnOffFlag=1
 	
 	posfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunpos_ki.txt'
 	morphfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunmorph_ki.txt'
 	
+	# Morphological disambiguation
 	(wordsArray, disArray) = MorphologicalDisambiguation(posfilePath, morphfilePath)
 	Array = StemmedForm(disArray, 0)
-	print StopWordFilter(Array, StopwordsPath)	
+	
+	# Stopword filtering
+	print StopWordFilter(Array)	
+	
 
 if __name__ == '__main__':
 	main()

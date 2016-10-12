@@ -108,9 +108,6 @@ wget https://github.com/dhuszti/SentAnalysisHUN/archive/master.zip
 unzip master.zip
 rm master.zip
 
-# Download python packages with pip
-pip install stop-words
-
 # Set permissions to access files not only as root privilege user
 chmod -R +r $HOME/NLPtools
 
