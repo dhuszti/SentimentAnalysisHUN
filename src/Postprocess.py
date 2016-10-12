@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os, sys, getopt, csv
 import subprocess, linecache
-from tfidf import calculate_tfidf
 from stop_words import get_stop_words
 from Morphological_Disambiguation import StemmedForm
 from Morphological_Disambiguation import MorphologicalDisambiguation
@@ -19,54 +18,29 @@ def StopWordFilter(sentencesArray):
 	for sentence in sentencesArray:
 		filteredSentence = []
 		for word in sentence:
-			# Decode word to unicode to capable of doing comparison
+			# Decode word to unicode to be capable of doing comparison with same encoding
 			if word.decode('latin2') not in stopwords:
 				filteredSentence.append(word)
 		filteredArray.append(filteredSentence)
 				
 	return filteredArray
 
-'''
-def StopWordFilterTFIDF(sentencelist, TFIDFthreshold):
-	filtered_sentlist = []	
-	for sentence in sentencelist:
-		filtered_sentence = []
-		for word in sentence:	
-			if calculate_tfidf(word, sentence, sentencelist) > TFIDFthreshold:
-				filtered_sentence.append(word)	
-		filtered_sentlist.append(filtered_sentence)
-	return filtered_sentlist
 
-def StopWordFilter(SentencesArray, TFIDFthreshold, stopwordsFilePath):
-	
-	# Apply TF-IDF to filter basic stopwords
-	#TFIDF_array = StopWordFilterTFIDF(SentencesArray, TFIDFthreshold)
-
-	# Apply some additional stopword filtering with a dictionary
-	stopwords = []
-	stopwordsfile = open(stopwordsFilePath,'rb')
-	for line in stopwordsfile:
-		stopwords.append(line.replace('\n',''))
-
-	# Apply some other filter
-	filteredArray = []
-	for elements in TFIDF_array:
-		filteredElements = []
-		
-		for element in elements:
-			if element != 'UNKNOWN' and '/ART' not in element and '/CONJ' not in element and '/PREV' not in element and 'NUM' not in element and '/POSTP' not in element:
-				if element not in stopwords:				
-					filteredElements.append(element)
-
-		filteredArray.append(filteredElements)
-
-	return filteredArray
-'''
-
-def NER_filtering():
+def NERFilter(sentencesArray):
 	
 	return NER
-	
+
+def NumberFilter(sentencesArray):
+	filteredArray = []
+	for sentence in sentencesArray:
+		filteredSentence = []
+		for word in sentence:
+			characters = set('0123456789')
+			if not any((c in characters) for c in word):
+				filteredSentence.append(word)
+		filteredArray.append(filteredSentence)
+
+	return filteredArray
 
 def main():
 	MorphResultsFilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/morph_ki.txt'
@@ -84,7 +58,10 @@ def main():
 	Array = StemmedForm(disArray, 0)
 	
 	# Stopword filtering
-	print StopWordFilter(Array)	
+	filtArray = StopWordFilter(Array)
+	
+	# Number character filtering
+	print NumberFilter(filtArray)	
 	
 
 if __name__ == '__main__':
