@@ -3,6 +3,7 @@ import os, sys, getopt, csv, nltk, numpy
 from Morphological_Disambiguation import StemmedForm
 from Morphological_Disambiguation import MorphologicalDisambiguation
 from Postprocess import StopWordFilter
+from Postprocess import NumberFilter
 
 #
 # Functions for n-gram usage
@@ -82,7 +83,7 @@ def n_gram(wordsArray, Array_to_N_Gram, PreprocessedCorpusPath, n_gram_number, n
 			elements.append(element)
 		for element in line[EntityEndList[iterator]:EndList[iterator]]:
 			elements.append(element)
-		print elements
+			
 		n_gram_Array.append(elements)
 		
 		iterator += 1
@@ -104,6 +105,7 @@ def get_words_from_array(sentencesArray):
 def get_word_features(wordlist):
 	wordlist = nltk.FreqDist(wordlist)
 	word_features = wordlist.keys()
+	word_occ = wordlist.values()
 	return word_features
 
 def extract_features(sentencesArray, word_features):
@@ -115,7 +117,7 @@ def extract_features(sentencesArray, word_features):
 				temp.append(0)
 			else:
 				temp.append(1)
-	features.append(temp)
+		features.append(temp)
 	return features
 
 
@@ -157,20 +159,22 @@ def main():
 	# Morphological disambiguation (wordsArray contains original words - for easier n-gram filtering, disArray for perfect output)
 	(wordsArray, disArray) = MorphologicalDisambiguation(posfilePath, morphfilePath)
 	stemmedArray = StemmedForm(disArray, 0)
-
-	# Stopword filtering 
-	stopwordfiltArray = StopWordFilter(stemmedArray)
 	
 	# Substitute rare words with specific label '_rare_'
-	substArray = replace_if_occurances(stopwordfiltArray, get_words_from_array(stopwordfiltArray), 3, '_rare_')
+	substArray = replace_if_occurances(stemmedArray, get_words_from_array(stemmedArray), 3, '_rare_')
 
 	# 5-gram usage example
-	print n_gram(wordsArray, substArray, PreprocessedCorpusPath, 5, 1)
-	
+	n_Array = n_gram(wordsArray, substArray, PreprocessedCorpusPath, 5, 1)
+
+	# Stopword filtering 
+	stopwordfiltArray = StopWordFilter(n_Array)
+
+	# Number filtering
+	filtArray = NumberFilter(stopwordfiltArray)
+		
 	# Feature extraction and frequency list
-	word_features = get_word_features(get_words_from_array(substArray))
-	extract_features(stemmedArray, word_features)
-	
+	word_features = get_word_features(get_words_from_array(filtArray))
+	extract_features(filtArray, word_features)
 	
 
 

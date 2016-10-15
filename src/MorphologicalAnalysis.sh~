@@ -23,4 +23,4 @@ SzegedNERPath=$HOME/NLPtools/SentAnalysisHUN-master/SzegedNER.txt
 
 # SzegedNER
 cat $SentimentCorpusPath | cut -f5 -d$'\t' > $SzegedNERInputPath
-java -Xmx3G -jar $SzegedNERPath -mode predicate -input $SzegedNERInputPath -output $SzegedNERPath
+java -Xmx3G -jar /home/osboxes/NLPtools/SzegedNER/ner.jar -mode predicate -input $SzegedNERInputPath -output $SzegedNERPath

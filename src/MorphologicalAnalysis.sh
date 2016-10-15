@@ -16,11 +16,11 @@ HunMorphOutputPath=$HOME/NLPtools/SentAnalysisHUN-master/hunmorph_ki.txt
 SzegedNERPath=$HOME/NLPtools/SentAnalysisHUN-master/SzegedNER.txt
 
 # Hunpos
-#cat $SentimentCorpusPath | cut -f5 -d$'\t' | huntoken | $XmlParserPath | sed ':a;N;$!ba;s/\n\n/\n/g' | $HunPosTagPath $SzegedModelPath > $HunPosOutputPath
+cat $SentimentCorpusPath | cut -f5 -d$'\t' | huntoken | $XmlParserPath | sed ':a;N;$!ba;s/\n\n/\n/g' | $HunPosTagPath $SzegedModelPath > $HunPosOutputPath
 
 # Hunmorph
-#cat $SentimentCorpusPath | cut -f5 -d$'\t' | huntoken | $XmlParserPath | sed ':a;N;$!ba;s/\n\n/\n/g' | ocamorph --bin $OcamorphBinPath > $HunMorphOutputPath
+cat $SentimentCorpusPath | cut -f5 -d$'\t' | huntoken | $XmlParserPath | sed ':a;N;$!ba;s/\n\n/\n/g' | ocamorph --bin $OcamorphBinPath > $HunMorphOutputPath
 
 # SzegedNER
-cat $SentimentCorpusPath | cut -f5 -d$'\t' > $SzegedNERInputPath
-java -Xmx3G -jar /home/osboxes/NLPtools/SzegedNER/ner.jar -mode predicate -input $SzegedNERInputPath -output $SzegedNERPath
+#cat $SentimentCorpusPath | cut -f5 -d$'\t' > $SzegedNERInputPath
+#java -Xmx3G -jar /home/osboxes/NLPtools/SzegedNER/ner.jar -mode predicate -input $SzegedNERInputPath -output $SzegedNERPath
