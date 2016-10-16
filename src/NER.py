@@ -13,18 +13,23 @@ def NER_Dictionary(CorpusFilePath):
 	personList = []
 	organizationList = []
 
+	tempList = []
+
 	for line in csvreader:
 		try:
 			blob = str(line[4]).decode('latin2')
 			text = Text(blob)
 			for sent in text.sentences:
 				for entity in sent.entities:
-			    		if 'PER' in entity.tag and entity not in personList:
-						personList.append(entity)
-					elif 'LOC' in entity.tag and entity not in locationList:
-						locationList.append(entity)
-					elif 'ORG' in entity.tag and entity not in organizationList:
-						organizationList.append(entity)
+					if entity not in tempList:
+				    		if 'PER' in entity.tag:
+							personList.extend(entity)
+						elif 'LOC' in entity.tag:
+							locationList.extend(entity)
+						elif 'ORG' in entity.tag:
+							organizationList.extend(entity)
+
+					tempList.extend(entity)
 		except:
 			pass
 	
