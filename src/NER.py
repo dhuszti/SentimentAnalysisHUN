@@ -1,33 +1,42 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import os, sys, getopt
-import subprocess, tempfile
-from os.path import expanduser
+import os, sys, getopt, csv
+from polyglot.text import Text
 
-def main(argv):
-   inputfile = ''
-   outputfile = ''
-   try:
-      opts, args = getopt.getopt(argv,"hi:o:",["ifile=","ofile="])
-   except getopt.GetoptError:
-      print 'huntoken.py -i <inputfile> -o <outputfile>'
-      sys.exit(2)
-   for opt, arg in opts:
-      if opt == '-h':
-         print 'huntoken.py -i <inputfile> -o <outputfile>'
-         sys.exit()
-      elif opt in ("-i", "--ifile"):
-         inputfile = arg
-      elif opt in ("-o", "--ofile"):
-         outputfile = arg
+# This function creates 3 dictionaries for location, person and organization. Important, both ones are in UNICODE encoding! 
+def NER_Dictionary(CorpusFilePath):
+	corpusfile = open(CorpusFilePath, 'rb')
+	csvreader = csv.reader(corpusfile, delimiter='\t')
 
-   print 'Input file is "', inputfile
-   print 'Output file is "', outputfile
+	locationList = []
+	personList = []
+	organizationList = []
 
-   cmd_huntoken = "java -Xmx3G -jar /home/hd/Downloads/ner.jar -mode predicate -input "+inputfile+" -output " + outputfile
-   p = subprocess.Popen(cmd_huntoken, stdout=subprocess.PIPE, shell=True)
-   (output, err) = p.communicate()
+	for line in csvreader:
+		try:
+			blob = str(line[4]).decode('latin2')
+			text = Text(blob)
+			for sent in text.sentences:
+				for entity in sent.entities:
+			    		if 'PER' in entity.tag and entity not in personList:
+						personList.append(entity)
+					elif 'LOC' in entity.tag and entity not in locationList:
+						locationList.append(entity)
+					elif 'ORG' in entity.tag and entity not in organizationList:
+						organizationList.append(entity)
+		except:
+			pass
+	
+	return (locationList, personList, organizationList)
+	
+
+def main():
+	PreprocessedCorpusPath='/home/osboxes/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_new.csv'
+	(locationList, personList, organizationList) = NER_Dictionary(PreprocessedCorpusPath)
+
+	print locationList
+
 
 if __name__ == "__main__":
-   main(sys.argv[1:])
+   	main()
