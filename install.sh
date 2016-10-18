@@ -72,10 +72,10 @@ make install
 
 
 # Install SzegedNER
-cd $HOME/NLPtools
-mkdir SzegedNER
-cd SzegedNER
-wget http://rgai.inf.u-szeged.hu/project/nlp/research/NER/ner.jar
+#cd $HOME/NLPtools
+#mkdir SzegedNER
+#cd SzegedNER
+#wget http://rgai.inf.u-szeged.hu/project/nlp/research/NER/ner.jar
 
 # To test it use: java -Xmx3G -jar ner.jar -mode predicate -input input.txt -output output.txt
 
@@ -100,6 +100,14 @@ tar -xvzf ekezo.tar.gz
 tar -xvzf p2iso.tar.gz
 rm ekezo.tar.gz
 rm p2iso.tar.gz
+
+# Install NER from Polyglot http://polyglot.readthedocs.io/en/latest/NamedEntityRecognition.html
+pip install polyglot
+polyglot download embeddings2.hu ner2.hu
+
+# Install REST API framework & extension for ip determination
+pip install Flask
+pip install netifaces
 
 
 # Download project files from GitHub
