@@ -19,8 +19,8 @@ apt-get --assume-yes install texlive
 
 # Packages for SzegedNER
 apt-get update
-apt-get --assume-yesinstall default-jre
-apt-get --assume-yesinstall default-jdk
+apt-get --assume-yes install default-jre
+apt-get --assume-yes install default-jdk
 
 # Packages for HunPos
 apt-get --assume-yes install --reinstall libc6-i386
@@ -102,6 +102,7 @@ rm ekezo.tar.gz
 rm p2iso.tar.gz
 
 # Install NER from Polyglot http://polyglot.readthedocs.io/en/latest/NamedEntityRecognition.html
+apt-get --assume-yes install python-numpy libicu-dev
 pip install polyglot
 polyglot download embeddings2.hu ner2.hu
 
