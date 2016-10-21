@@ -51,21 +51,38 @@ def n_gram_intervals(wordsArray, PreprocessedCorpusPath, n_gram_number, n_gram_o
 			EntityStartList.append(EntityStart)
 			EntityEnd = EntityStart + int(line[2])
 			EntityEndList.append(EntityEnd)
+			print str(line[3].split()[0]).lower()
+			print wordsArray[iterator]
 		elif any(line[3].split()[0][:-1] in s for s in wordsArray[iterator]):
 			matching_temp = [s for s in wordsArray[iterator] if line[3].split()[0][:-1] in s]
 			EntityStart = wordsArray[iterator].index(matching_temp[0])
 			EntityStartList.append(EntityStart)
 			EntityEnd = EntityStart + int(line[2])
 			EntityEndList.append(EntityEnd)
+			print str(line[3].split()[0]).lower()
+			print wordsArray[iterator]
+		elif str(line[3].split()[0]).lower() in wordsArray[iterator]:
+			# in case of capital letter would mean a problem
+			EntityStart = wordsArray[iterator].index(str(line[3].split()[0]).lower())
+			EntityStartList.append(EntityStart)
+			EntityEnd = EntityStart + int(line[2])
+			EntityEndList.append(EntityEnd)
+			print str(line[3].split()[0]).lower()
+			print wordsArray[iterator]
 		else:
+			print str(line[3].split()[0]).lower()
+			print iterator			
+			print wordsArray[iterator]
+			print wordsArray[iterator].index(str(line[3].split()[0]).lower())
 			break
+	
 		
 		(Start, End) = n_gram_indexes_by_line(wordsArray, iterator, EntityStart, EntityEnd, n_gram_number, n_gram_onoff)
 		StartList.append(Start)
 		EndList.append(End)
 
 		iterator += 1
-
+	
 	return (EntityStartList, EntityEndList, StartList, EndList)
 	
 
@@ -79,13 +96,19 @@ def n_gram(wordsArray, Array_to_N_Gram, PreprocessedCorpusPath, n_gram_number, n
 	iterator = 0
 	for line in Array_to_N_Gram:
 		elements = []
+		print iterator
+		print line
+		print StartList[iterator]
+		print EntityStartList[iterator]
+		print EntityEndList[iterator]
+		print EndList[iterator]
 		for element in line[StartList[iterator]:EntityStartList[iterator]]:
 			elements.append(element)
 		for element in line[EntityEndList[iterator]:EndList[iterator]]:
 			elements.append(element)
 			
 		n_gram_Array.append(elements)
-		
+		print "ok"
 		iterator += 1
 
 	return n_gram_Array
@@ -149,12 +172,27 @@ def replace_if_occurances(sentencesArray, wordlist, occurance_threshold, substSt
 	return substArray
 
 
+#
+# Sentiment dictionary read from file
+#
+def SentimentDictionary_Read(FilePath):
+	SentDict = []
+	
+	sentdicfile = open(FilePath,'rb')
+	for line in sentdicfile:
+    		if not line.strip().startswith("#"):	
+			SentDict.append(line.rstrip().decode('latin2'))
+
+	return SentDict
+
+
 # Main
 def main():
 	# Some info to apply morphological disambiguation and create stemmed form 
 	PreprocessedCorpusPath='/home/osboxes/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_new.csv'
 	posfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunpos_ki.txt'
 	morphfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunmorph_ki.txt'
+	stopwordsFilePath='/home/osboxes/Desktop/SentimentAnalysisHUN/resources/StopwordLexicon/stopwords.txt'
 	
 	# Morphological disambiguation (wordsArray contains original words - for easier n-gram filtering, disArray for perfect output)
 	(wordsArray, disArray) = MorphologicalDisambiguation(posfilePath, morphfilePath)
@@ -167,14 +205,13 @@ def main():
 	n_Array = n_gram(wordsArray, substArray, PreprocessedCorpusPath, 5, 1)
 
 	# Stopword filtering 
-	stopwordfiltArray = StopWordFilter(n_Array)
+	stopwordfiltArray = StopWordFilter(n_Array, stopwordsFilePath)
 
 	# Number filtering
 	filtArray = NumberFilter(stopwordfiltArray)
-		
-	# Feature extraction and frequency list
-	word_features = get_word_features(get_words_from_array(filtArray))
-	extract_features(filtArray, word_features)
+
+	print SentimentDictionary_Read('/home/osboxes/Desktop/SentimentAnalysisHUN/resources/SentimentLexicons/PrecoNeg.txt')
+	
 	
 
 
