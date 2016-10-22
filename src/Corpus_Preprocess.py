@@ -31,18 +31,17 @@ def CorpusPreprocess(in_file, out_file):
 				reviewScore -= 1
 			elif line[i] == '1':
 				reviewScore += 1
-	
-		# Filter rows to positive/negative reviews
-		# CHANGE IT TO !=0 for only positive/negative corpus
-		#HunSpecLetters = []		
+		
+		# Special letters to cleanse data at points where sentence not starts with capital one
 		HunSpecLetters = str('ÁáÉéÍíÓóÖöŐőÚúÜüŰŰ').decode('utf8').encode('latin2')		
-
-		if reviewScore < 6:
+		
+		# Filter rows to positive/negative reviews
+		# CHANGE IT TO: 
+		#	- reviewScore!=0 for only positive/negative entities
+		#	- reviewScore<6 for both positive/negative/neutral entities
+		if reviewScore != 0:
 			''' Check for letter and make it uppercase later. '''
 			firstLetter = 1
-			#while line[4][firstLetterIter].isalpha() or line[4][firstLetterIter] in HunSpecLetters:				
-			#	firstLetterIter += 1
-		
 			for char in line[4][0:5]:
 				if char.isalpha() or char in HunSpecLetters:
 					break
@@ -70,7 +69,7 @@ def CorpusPreprocess(in_file, out_file):
 
 def main():
 	inputfile = '/home/osboxes/Downloads/archive/OpinHuBank_20130106.csv' 
-	outputfile = '/home/osboxes/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_new_with_neutral2.csv'
+	outputfile = '/home/osboxes/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_new_with_posneg.csv'
 	CorpusPreprocess(inputfile, outputfile)
 
 if __name__ == '__main__':

@@ -76,7 +76,6 @@ class Densifier(BaseEstimator):
 		print "transform density"
         	return X.toarray()
 
-
 def main():
 	
 	# Some info to apply morphological disambiguation and create stemmed form 
@@ -84,7 +83,7 @@ def main():
 	posfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunpos_ki.txt'
 	morphfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunmorph_ki.txt'
 	stopwordsFilePath='/home/osboxes/Desktop/SentimentAnalysisHUN/resources/stopwords.txt'
-	
+
 	# Morphological disambiguation (wordsArray contains original words - for easier n-gram filtering, disArray for perfect output)
 	(wordsArray, disArray) = MorphologicalDisambiguation(posfilePath, morphfilePath)
 	stemmedArray = StemmedForm(disArray, 0)
@@ -120,14 +119,14 @@ def main():
 	density = Densifier().fit_transform(cv)
 	print density
 
-	dimred = TruncatedSVD().fit_transform(density)
+	pca = PCA().fit_transform(density)
 	
-	print dimred
+	print pca
 
-	model = SVC().fit(dimred, trainingLabel)
+	model = SVC().fit(pca, trainingLabel)
 	print model
 	
-	print model.predict(dimred)
+	print model.predict(pca)
 	'''
 	# create sklearn.pipeline for automated machine learning
 	pipeline = Pipeline([
@@ -136,9 +135,10 @@ def main():
 		('reduce_dim', PCA()),	# this is called otherwise LSA, n_components need to have same number as input label category number
 		('classifier', SVC()),		# train on TF-IDF vectors w/ Naive Bayes classifier
 	])
+
 	# use gridsearchCV for automated machine learning with multiple options - "parameters". It helps to find best options for ML.
 	params = [
-	  {'classifier__C': [1, 10], 'classifier__kernel': ['linear']},
+	  {'classifier__C': [1], 'classifier__kernel': ['linear']},
 	  #{'classifier__C': [1, 10, 100, 1000], 'classifier__gamma': [0.001, 0.0001], 'classifier__kernel': ['rbf']},
 	]
 
@@ -166,7 +166,6 @@ def main():
 	print confusion_matrix(testLabel, predictions)		# TP, TF, ... values
 	print "Evaluation scores"
 	print classification_report(testLabel, predictions)	# precision, recall, f-score
-
 
 if __name__ == '__main__':
 	main()

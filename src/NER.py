@@ -4,6 +4,10 @@
 import os, sys, getopt, csv
 from polyglot.text import Text
 from itertools import chain
+from Morphological_Disambiguation import StemmedForm
+from Morphological_Disambiguation import MorphologicalDisambiguation
+from Postprocess import StopWordFilter
+from Postprocess import NumberFilter
 
 # This function creates 3 dictionaries for location, person and organization. Important, every result set is in UNICODE encoding! 
 def NER_Dictionary(CorpusFilePath):
@@ -22,13 +26,13 @@ def NER_Dictionary(CorpusFilePath):
 				for entity in sent.entities:
 					tag = entity.tag
 					for element in entity:
-						if element not in chain(personList, locationList, organizationList):
+						if element.encode('latin2') not in chain(personList, locationList, organizationList):
 					    		if 'PER' in tag:
-								personList.append(element)
+								personList.append(element.encode('latin2'))
 							elif 'LOC' in tag:
-								locationList.append(element)
+								locationList.append(element.encode('latin2'))
 							elif 'ORG' in tag:
-								organizationList.append(element)
+								organizationList.append(element.encode('latin2'))
 		except:
 			pass
 	
@@ -44,14 +48,52 @@ def NER_Dictionary(CorpusFilePath):
 	organizationList = sorted(organizationList)	
 
 	return (locationList, personList, organizationList)
+
+def NERfilter(sentencesArray, filterList):
+	filteredArray = []
+	for sentence in sentencesArray:
+		filteredSentence = []
+		for word in sentence:
+			#if [s for s in filterList if word not in s]:
+			if word not in filterList:			
+				filteredSentence.append(word)
+			
+		filteredArray.append(filteredSentence)
+
+	return filteredArray
 	
 
 def main():
 	PreprocessedCorpusPath='/home/osboxes/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_new.csv'
 	(locationList, personList, organizationList) = NER_Dictionary(PreprocessedCorpusPath)
 
-	print personList
+	#print personList
+	
+	# TESTING NER_FILTERING
+	MorphResultsFilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/morph_ki.txt'
+	PreprocessedCorpusPath='/home/osboxes/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_new.csv'
+	TFIDFthreshold=0.4	
+	stopwordsFilePath='/home/osboxes/Desktop/SentimentAnalysisHUN/resources/stopwords.txt'
+	IntervalNumber=5
+	OnOffFlag=1
+	
+	posfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunpos_ki.txt'
+	morphfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunmorph_ki.txt'
+	
+	# Morphological disambiguation
+	(wordsArray, disArray) = MorphologicalDisambiguation(posfilePath, morphfilePath)
+	Array = StemmedForm(disArray, 0)
+	
+	# Stopword filtering
+	filtArray = StopWordFilter(Array, stopwordsFilePath)
+	
+	NERArray = NERfilter(filtArray, personList)
+	NERArray = NERfilter(NERArray, locationList)
+	NERArray = NERfilter(NERArray, organizationList)
+	print NERArray
+	#print filtArray[(len(filtArray)-4):len(filtArray)]
 
+	
 
 if __name__ == "__main__":
    	main()

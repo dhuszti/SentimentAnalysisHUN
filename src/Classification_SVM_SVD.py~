@@ -83,6 +83,7 @@ def main():
 	PreprocessedCorpusPath='/home/osboxes/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_new.csv'
 	posfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunpos_ki.txt'
 	morphfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunmorph_ki.txt'
+	stopwordsFilePath='/home/osboxes/Desktop/SentimentAnalysisHUN/resources/stopwords.txt'
 	
 	# Morphological disambiguation (wordsArray contains original words - for easier n-gram filtering, disArray for perfect output)
 	(wordsArray, disArray) = MorphologicalDisambiguation(posfilePath, morphfilePath)
@@ -119,14 +120,14 @@ def main():
 	density = Densifier().fit_transform(cv)
 	print density
 
-	pca = PCA().fit_transform(density)
+	dimred = TruncatedSVD().fit_transform(density)
 	
-	print pca
+	print dimred
 
-	model = SVC().fit(pca, trainingLabel)
+	model = SVC().fit(dimred, trainingLabel)
 	print model
 	
-	print model.predict(pca)
+	print model.predict(dimred)
 	'''
 	# create sklearn.pipeline for automated machine learning
 	pipeline = Pipeline([
@@ -137,8 +138,8 @@ def main():
 	])
 	# use gridsearchCV for automated machine learning with multiple options - "parameters". It helps to find best options for ML.
 	params = [
-	  {'classifier__C': [1, 10, 100, 1000], 'classifier__kernel': ['linear']},
-	  {'classifier__C': [1, 10, 100, 1000], 'classifier__gamma': [0.001, 0.0001], 'classifier__kernel': ['rbf']},
+	  {'classifier__C': [1, 10], 'classifier__kernel': ['linear']},
+	  #{'classifier__C': [1, 10, 100, 1000], 'classifier__gamma': [0.001, 0.0001], 'classifier__kernel': ['rbf']},
 	]
 
 	grid = GridSearchCV(
@@ -147,7 +148,7 @@ def main():
 	    refit=True,  			# fit using all available data at the end, on the best found param combination
 	    n_jobs=-1,  			# number of cores to use for parallelization; -1 for "all cores"
 	    scoring='accuracy',  		# what score are we optimizing?
-	    cv=StratifiedKFold(n_splits=3).get_n_splits(trainingSet, trainingLabel),  # what type of cross validation to use
+	    cv=StratifiedKFold(n_splits=5).get_n_splits(trainingSet, trainingLabel),  # what type of cross validation to use
 	)
 
 	# predictive model training

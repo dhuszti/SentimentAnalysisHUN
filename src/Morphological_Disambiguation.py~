@@ -58,6 +58,7 @@ def MorphologicalDisambiguation(posfilePath, morphfilePath):
 	# Disambiguation
 	disambiguatedArray = []	
 
+	it = 0
 	if len(posArray) == len(morphArray):
 		for sentIter in range(0, len(morphArray)):
 			disambiguatedSentence = []
@@ -72,7 +73,9 @@ def MorphologicalDisambiguation(posfilePath, morphfilePath):
 						disambiguatedSentence.append(wordsArray[sentIter][wordIter])				
 					else:
 						disambiguatedSentence.append(matching[0])
-	
+			it += 1			
+			print it
+			print morphArray[it]
 			disambiguatedArray.append(disambiguatedSentence)
 	
 	else:

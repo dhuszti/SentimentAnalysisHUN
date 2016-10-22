@@ -6,13 +6,19 @@ from Morphological_Disambiguation import StemmedForm
 from Morphological_Disambiguation import MorphologicalDisambiguation
 
 
-def StopWordFilter(sentencesArray):
+def StopWordFilter(sentencesArray, stopwordsFilePath):
 	# Stopwords in unicode format	
-	stopwords = get_stop_words('hu')
+	#stopwords = get_stop_words('hu')
 	
 	# These words are missing from stopwords
-	stopwords.append('is')
-	stopwords.append('le')
+	#stopwords.append('is')
+	#stopwords.append('le')
+
+	stopwords = []
+	stopfile = open(stopwordsFilePath,'rb')
+	for line in stopfile:
+    		if not line.strip().startswith("#"):
+        		stopwords.append(line.rstrip().decode('utf8'))
 
 	filteredArray = []
 	for sentence in sentencesArray:
@@ -22,13 +28,9 @@ def StopWordFilter(sentencesArray):
 			if word.decode('latin2') not in stopwords:
 				filteredSentence.append(word)
 		filteredArray.append(filteredSentence)
-				
+		
 	return filteredArray
 
-
-def NERFilter(sentencesArray):
-	
-	return NER
 
 def NumberFilter(sentencesArray):
 	filteredArray = []
@@ -46,7 +48,7 @@ def main():
 	MorphResultsFilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/morph_ki.txt'
 	PreprocessedCorpusPath='/home/osboxes/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_new.csv'
 	TFIDFthreshold=0.4	
-	#StopwordsPath='/home/osboxes/Desktop/SentimentAnalysisHUN/resources/stopwords.txt'
+	stopwordsFilePath='/home/osboxes/Desktop/SentimentAnalysisHUN/resources/stopwords.txt'
 	IntervalNumber=5
 	OnOffFlag=1
 	
@@ -58,7 +60,7 @@ def main():
 	Array = StemmedForm(disArray, 0)
 	
 	# Stopword filtering
-	filtArray = StopWordFilter(Array)
+	filtArray = StopWordFilter(Array, stopwordsFilePath)
 	
 	# Number character filtering
 	print NumberFilter(filtArray)	

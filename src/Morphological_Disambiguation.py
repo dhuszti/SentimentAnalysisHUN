@@ -72,7 +72,7 @@ def MorphologicalDisambiguation(posfilePath, morphfilePath):
 						disambiguatedSentence.append(wordsArray[sentIter][wordIter])				
 					else:
 						disambiguatedSentence.append(matching[0])
-	
+			
 			disambiguatedArray.append(disambiguatedSentence)
 	
 	else:

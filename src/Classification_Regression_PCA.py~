@@ -24,7 +24,7 @@ from Postprocess import NumberFilter
 from FeatureExtraction import SentimentDictionary_Read
 from FeatureExtraction import n_gram
 from FeatureExtraction import replace_if_occurances
-from FeatureExtraction import ís_from_array
+from FeatureExtraction import get_words_from_array
 
 # Create a List containing all inputs in unicode encoding for CountVectorizer specific input purpose
 def CountVectorizerTransform_input(inputList):
@@ -178,7 +178,7 @@ def main():
 			    # TF-IDF to have a more accurate overview on words, which have a huge influance on sentiment analysis
 			    ('pca', Pipeline([
 					('countVec', CountVectorizer(encoding='latin2')),					
-					('densify', Densifier()),				# densifier to apply toarray() transformation
+					('densify', Densifier()),		# densifier to apply toarray() transformation
 					('pca', PCA(n_components=2)),			# this is called otherwise LSA, n_components need to have same number as input label category number
 			    ])),
 
@@ -202,14 +202,13 @@ def main():
 			},
 	    	)),
 	   # Naive Bayes classifier
-	   ('classifier', SVC()),
+	   ('regression', LogisticRegression()),
 
 	])
 
 	# use gridsearchCV for automated machine learning with multiple options - "parameters"
 	params = {
-	    'classifier__C': [1], 
-		'classifier__kernel': ['linear']
+	    'regression__solver': ['liblinear'],
 	}
 
 	grid = GridSearchCV(
@@ -226,7 +225,7 @@ def main():
 	
 	# predictive model results with different options determined at parameters
 	means = clf.cv_results_['mean_test_score']
-    stds = clf.cv_results_['std_test_score']
+    	stds = clf.cv_results_['std_test_score']
 	print means
 	print stds
 
@@ -236,25 +235,26 @@ def main():
 	print confusion_matrix(testLabel, predictions)		# TP, TF, ... values
 	print "Evaluation scores"
 	print classification_report(testLabel, predictions)	# precision, recall, f-score
-	
 	# Pearson correlation
 	try:
 		print "Pearson correlation"
 		print pearsonr(testLabel, predictions)
+		print np.corrcoef(testLabel, predictions)
 	except:
 		pass
-
 	# Error scores
 	try:
+		print "Mean squared error"
+		print mean_squared_error(testLabel, predictions)	# MSE calculation
+		print "MSE \t MAE \t RMSE \t MAE_square"
 		mse = mean_squared_error(testLabel, predictions)
 		rmse = sqrt(mean_squared_error(testLabel, predictions))
 		mae = mean_absolute_error(testLabel, predictions)
-		print "MSE \t MAE \t RMSE \t MAE_square"
 		print str(mse) + '\t' + str(mae) + '\t' + str(rmse) + '\t' + str(mae*mae)
 	except:
 		pass
 
-	# Test some sentences
+
 	print "\nTest:"	
 	testSent1 = ["ez egy nagyon rossz nap"]
 	print testSent1
