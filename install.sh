@@ -109,6 +109,7 @@ polyglot download embeddings2.hu ner2.hu
 # Install REST API framework & extension for ip determination
 pip install Flask
 pip install netifaces
+pip install requests
 
 
 # Download project files from GitHub
