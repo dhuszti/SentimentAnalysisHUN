@@ -1,3 +1,8 @@
+# This is a dictionary containing stopwords prepared by Anna Tordai - http://snowball.tartarus.org/algorithms/hungarian/stop.txt
+# ------------------------------------------------------------------------------------------------------------------
+# Some modifications were done on this dictionary because there are words which can be useful for sentiment analysis.
+# These words were removed: jó, jól, jobban, ellen, nagy, nagyobb, nem, semmi, utolsó
+# ------------------------------------------------------------------------------------------------------------------
 a
 ahogy
 ahol
@@ -54,7 +59,6 @@ egyre
 ekkor
 el
 elég
-ellen
 elõ
 elõször
 elõtt
@@ -86,12 +90,9 @@ ill.
 ill
 ilyen
 ilyenkor
-ison
+is
 ismét
 itt
-jó
-jól
-jobban
 kell
 kellett
 keresztül
@@ -100,6 +101,7 @@ ki
 kívül
 között
 közül
+le
 legalább
 lehet
 lehetett
@@ -135,14 +137,11 @@ mint
 mintha
 mivel
 most
-nagy
-nagyobb
 nagyon
 ne
 néha
 nekem
 neki
-nem
 néhány
 nélkül
 nincs
@@ -158,7 +157,6 @@ rá
 s
 saját
 sem
-semmi
 sok
 sokat
 sokkal
@@ -179,7 +177,6 @@ ugyanis
 újra
 után
 utána
-utolsó
 vagy
 vagyis
 valaki
@@ -197,4 +194,3 @@ vissza
 vele
 viszont
 volna
-

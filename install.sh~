@@ -102,7 +102,8 @@ rm ekezo.tar.gz
 rm p2iso.tar.gz
 
 # Install NER from Polyglot http://polyglot.readthedocs.io/en/latest/NamedEntityRecognition.html
-pip install downloader
+apt-get install python-numpy libicu-dev
+pip install polyglot
 polyglot download embeddings2.hu ner2.hu
 
 # Install REST API framework & extension for ip determination
