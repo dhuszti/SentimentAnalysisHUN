@@ -1,10 +1,15 @@
+# -*- coding: utf-8 -*-
+import netifaces, logging, subprocess, requests
+from sklearn.externals import joblib
+
 # Flask was used as REST API framework http://flask.pocoo.org/docs/0.11/
 # Tutorial followed https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
 from flask import Flask, jsonify, abort, make_response, request, url_for
-import netifaces, logging
-from sklearn.externals import joblib
 
-# Logging initialization
+from Morphological_Disambiguation import MorphologicalDisambiguation, StemmedForm
+from Classifier import CountVectorizerTransform_input
+
+# LOGGING INIT
 logger = logging.getLogger('SentimentAnalysisHUN')
 filehandler = logging.FileHandler('/var/tmp/SentimentAnalysisHUN.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
@@ -15,17 +20,22 @@ streamhandler.setFormatter(formatter)
 logger.addHandler(streamhandler)
 logger.setLevel(logging.WARNING)
 
-# Usage of logger with 
-# logger.error('Sentiment corpus may not exist or at wrong place. Please doublecheck it!')
+# GLOBAL VARIABLES
+ML_model = joblib.load(open('SentAnalysisModel.pkl'))						# Load ML model file
+xmlparserFilePath = '$HOME/Desktop/SentimentAnalysisHUN/src/xmlparser.py'
+hunpostagFilePath = '$HOME/NLPtools/hunpos/hunpos-1.0-linux/hunpos-tag'
+szegedmodelFilePath = '$HOME/NLPtools/hunpos/hu_szeged_kr.model'
+ocamorphFilePath = '$HOME/NLPtools/HunMorph/ocamorph/adm/morphdb_hu.bin'
+posFilePath = '/tmp/sentanalysis_pos.txt'
+morphFilePath = '/tmp/sentanalysis_morph.txt'
+githubUrl = 'https://raw.githubusercontent.com/dhuszti/SentimentAnalysisHUN/master/README'
 
-# Load ML model file
-ML_model = joblib.load(open('SentAnalysisModel.pkl'))
-print ML_model.predict(["szar vacak teszt"])
 
-
-# Flask REST API
+# REST API creation
+""" All rights are reserved by open-source Flask REST API framework. """
 app = Flask(__name__)
 
+# ERROR HANDLERS
 @app.errorhandler(400)
 def not_found(error):
     return make_response(jsonify( { 'error': 'Bad request' } ), 400)
@@ -34,64 +44,62 @@ def not_found(error):
 def not_found(error):
     return make_response(jsonify( { 'error': 'Not found' } ), 404)
 
+# Overview page for sentiment analysis tool
+@app.route('/', methods = ['GET'])
+def description():
+    return requests.get(githubUrl).text
 
-tasks = [
-    {
-        'id': 1,
-        'title': u'Buy groceries',
-        'description': u'Milk, Cheese, Pizza, Fruit, Tylenol', 
-        'done': False
-    },
-    {
-        'id': 2,
-        'title': u'Learn Python',
-        'description': u'Need to find a good Python tutorial on the web', 
-        'done': False
-    }
-]
-
-def make_public_task(task):
-    new_task = {}
-    for field in task:
-        if field == 'id':
-            new_task['uri'] = url_for('get_task', task_id=task['id'], _external=True)
-        else:
-            new_task[field] = task[field]
-    return new_task
-
-@app.route('/todo/api/v1.0/tasks', methods = ['GET'])
-def get_tasks():
-    return jsonify( { 'tasks': map(make_public_task, tasks) } )
-
-@app.route('/todo/api/v1.0/tasks/<int:task_id>', methods = ['GET'])
-def get_task(task_id):
-    task = filter(lambda t: t['id'] == task_id, tasks)
-    if len(task) == 0:
-        abort(404)
-    return jsonify( { 'task': make_public_task(task[0]) } )
-
-@app.route('/todo/api/v1.0/tasks', methods=['POST'])
-def create_task():
+# HTTP POST REQUEST FOR SENTIMENT ANALYSIS
+@app.route('/sentiment', methods=['POST'])
+def sentiment():
     if not request.json or not 'sentence' in request.json:
         abort(400)
 
-    task = {
-        'sentence': request.json['sentence'],
-        'entity': 'Sando Chan',
-	# use this form as input for SentimentAnalysis tool
-	'description': request.json.get('description', ""),
-        'sentiment': 'positive',
-        'score': 0.75
+    sentiment = {
+        'sentence': request.json['sentence'].encode('utf8'),
+        #'entity': 'Sando Chan',
+		'sentiment': SentimentAnalysis(request.json['sentence'])
     }
   
-    return jsonify({'task': task}), 201
+    return jsonify({'sentiment': sentiment}), 201
 
 
 
+""" Sentiment analysis function for incoming tuple """ 
+def SentimentAnalysis(inputString):
+	# Typoing
+	#cmd = 'echo ' + inputString.encode('latin2') + ' | $HOME/NLPtools/typo/ekezo/ekito.run | $HOME/NLPtools/typo/p2iso '			
+	#p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+	#(typo_out, err) = p.communicate()
+
+	# part-of-speech tagging 
+	cmd = 'echo ' + inputString.encode('latin2') + ' | huntoken | ' + xmlparserFilePath + ' | ' + hunpostagFilePath + ' ' + szegedmodelFilePath + ' > ' + posFilePath			
+	p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+	(pos_out, err) = p.communicate()
+	
+	# morphological analysis
+	cmd = 'echo ' + inputString.encode('latin2') + ' | huntoken | ' + xmlparserFilePath + ' | ocamorph --bin ' + ocamorphFilePath + ' > ' + morphFilePath			
+	p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+	(morph_out, err) = p.communicate()
+
+	# morph disambiguation with stemmed form without POS tagging
+	(wordsArray, disArray) = MorphologicalDisambiguation(posFilePath, morphFilePath)
+	stemmedArray = StemmedForm(disArray, 0)
+	
+	# convert every word to lowercase
+	stemmedArray = [[word.lower() for word in sent] for sent in stemmedArray]
+	
+	# convert to countvectorizer digestible format
+	List = CountVectorizerTransform_input(stemmedArray)
+
+	return ML_model.predict(List)[0]
 
 
-if __name__ == '__main__':
-	# http://stackoverflow.com/questions/11735821/python-get-localhost-ip
+
+""" Main function for Sentiment Analysis API access """
+def main():
+	# Network interfaces determination for IP address determination. 
+	# source: http://stackoverflow.com/questions/11735821/python-get-localhost-ip
 	interfaces = netifaces.interfaces()
 	for i in interfaces:
 	    if i == 'lo':
@@ -101,4 +109,12 @@ if __name__ == '__main__':
 		for j in iface:
 		    ip_addr = j['addr']
 
-    	app.run(host=ip_addr, port=5000)
+	# Run application with REST API
+	print "\nThis is an open-source Sentiment Analysis tool created for Hungarian language.\n"
+	print "Please use sentence tag for adding input\n"
+	print "Usage example:\ncurl -i -H 'Content-Type: application/json' -X POST -d '{'sentence': 'Budapest az egyik legszebb város.'}' http://192.168.196.144:5000/sentiment\n"
+	print "Please use url below to access API from other machine:"
+	app.run(host=ip_addr, port=5000)
+	
+if __name__ == '__main__':
+	main()
