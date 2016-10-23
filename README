@@ -1,3 +1,5 @@
 This is an open-source sentiment analysis tool for Hungarian language, written in Python.
 
+'Example usage': 'curl -i -H "Content-Type: application/json" -X POST -d "{"sentence": "Budapest az egyik legszebb város."}" http://192.168.196.144:5000/sentiment'
+
 
