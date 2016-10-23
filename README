@@ -1,5 +1,27 @@
 This is an open-source sentiment analysis tool for Hungarian language, written in Python.
 
-'Example usage': 'curl -i -H "Content-Type: application/json" -X POST -d "{"sentence": "Budapest az egyik legszebb város."}" http://192.168.196.144:5000/sentiment'
+I created a REST API for easier access.
 
+Please use sentence tag for adding input like this {'sentence': '<write your input here>'}
+Tool is accessable via a HTTP POST request at http://<ip_addr_of_docker>:5000/sentiment url
 
+Usage example:
+curl -i -H "Content-Type: application/json" -X POST -d "{"sentence": "Budapest az egyik legszebb város."}" http://192.168.196.144:5000/sentiment
+
+Installation (now under construction):
+1. Native way
+	- prerequisite: linux OS (Ubuntu, Debian, RHEL, CentOS)
+	- launch ./install.sh
+
+2. Docker
+	- download and install docker
+	- pull and run container
+
+Following external open-source tools were applied:
+1. NLP tools
+- HunToken
+- HunPoS
+- Ocamorph & HunMorph
+- Polyglot NER 
+
+2. Python Flask REST API - http://flask.pocoo.org/
