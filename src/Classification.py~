@@ -7,9 +7,9 @@ import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.svm import SVC, LinearSVC
-from sklearn.metrics import classification_report, f1_score, accuracy_score, confusion_matrix, learning_curve
+from sklearn.metrics import classification_report, f1_score, accuracy_score, confusion_matrix
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import GridSearchCV, StratifiedKFold, train_test_split
+from sklearn.model_selection import GridSearchCV, StratifiedKFold, train_test_split, learning_curve
 
 from Morphological_Disambiguation import MorphologicalDisambiguation
 from Morphological_Disambiguation import StemmedForm

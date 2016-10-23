@@ -69,6 +69,7 @@ def main():
 
 	#print personList
 	
+	# TESTING NER_FILTERING
 	MorphResultsFilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/morph_ki.txt'
 	PreprocessedCorpusPath='/home/osboxes/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_new.csv'
 	TFIDFthreshold=0.4	
@@ -90,7 +91,7 @@ def main():
 	NERArray = NERfilter(NERArray, locationList)
 	NERArray = NERfilter(NERArray, organizationList)
 	print NERArray
-	print filtArray[(len(filtArray)-4):len(filtArray)]
+	#print filtArray[(len(filtArray)-4):len(filtArray)]
 
 	
 

@@ -1,79 +1,5 @@
 # -*- coding: utf-8 -*-
 import os, sys, getopt, csv, nltk, numpy
-from sklearn.base import BaseEstimator, TransformerMixin
-
-from Morphological_Disambiguation import StemmedForm
-from Morphological_Disambiguation import MorphologicalDisambiguation
-from Postprocess import StopWordFilter
-from Postprocess import NumberFilter
-
-
-# FEATURES, FUNCTIONS FOR SKLEARN.PIPELINE EXTENSION
-
-class SentDictOccurancesFeature(BaseEstimator, TransformerMixin):
-	""" This feature is used at next phase - "sklearn pipeline" - 
-	to determine sentiment dictionary occurances by each tuple. """
-
-	def __init__(self, posDict='', negDict=''):
-		self.posDict = posDict
-		self.negDict = negDict	
-    	
-	def fit(self, raw_documents, y=None):
-       		return self
-    	
-	def fit_transform(self, raw_documents, y=None):
-		return self.transform(raw_documents)
-
-	def transform(self, raw_documents, y=None):
-		PosNegOccurances = np.recarray(shape=(len(raw_documents),1), dtype=[('positive', int), ('negative', int)])		
-		for i, sentence in enumerate(raw_documents):		
-			PosOccurances = 0
-			NegOccurances = 0	
-			words = sentence.split()
-			for word in words:
-				if word in self.posDict:
-					PosOccurances += 1
-				elif word in self.negDict:
-					NegOccurances += 1	
-
-			PosNegOccurances['positive'][i]= PosOccurances
-			PosNegOccurances['negative'][i]= NegOccurances	
-		
-		return PosNegOccurances
-
-
-class ItemSelector(BaseEstimator, TransformerMixin):
-	""" Itemselector is used at next phase at "sklearn pipeline". Its main role is
-	to select positive or negative occurances in a tuple coming from
-	'SentDictOccurancesFeature'.
-	"""
-    def __init__(self, key):
-        self.key = key
-
-    def fit(self, x, y=None):
-        return self
-
-    def transform(self, data_dict):
-        return data_dict[self.key]
-
-
-class Densifier(BaseEstimator):
-	""" Densifier is used at next phase at "sklearn pipeline" to be capable of 
-	applying PCA as dimension reduction method. Basically it is quite simple, 
-	only transforms input format into array, which is prerequisite incoming 
-	format of PCA.
-	"""
-	def __init__(self):
-		BaseEstimator.__init__(self)
-
-	def fit(self, X, y=None):
-		pass
-		
-	def fit_transform(self, X, y=None):
-		return self.transform(X)
-
-	def transform(self, X, y=None):
-		return X.toarray()
 
 
 
@@ -183,10 +109,8 @@ def n_gram(wordsArray, Array_to_N_Gram, PreprocessedCorpusPath, n_gram_number, n
 	return n_gram_Array
 
 
-
-
 # FUNCTION FOR WORD EXTRACTION TO HAVE A LIST OF POSSIBLE WORDS
-
+""" It is used for determining a list of possible words. """
 def get_words_from_array(sentencesArray):
 	all_words = []
 	for words in sentencesArray:
@@ -195,7 +119,9 @@ def get_words_from_array(sentencesArray):
 
 
 # FEATURE TO SUBSTITUTE RARE TOKENS/WORDS WITH A SPECIAL STRING 
-
+""" Rare tokens are really a huge problem for machine learning tasks, so they 
+are substituted with a unique token. Now applying this function machine learning 
+results are going to be more realistic. """
 def replace_if_occurances(sentencesArray, wordlist, occurance_threshold, substString):
 	words_with_occurances = nltk.FreqDist(wordlist)
 	words = words_with_occurances.keys()
@@ -222,7 +148,7 @@ def replace_if_occurances(sentencesArray, wordlist, occurance_threshold, substSt
 
 
 # SENTIMENT DICTIONARY READ FROM FILE
-
+""" Read values from external sentiment dictionaries into a list """
 def SentimentDictionary_Read(FilePath):
 	SentDict = []
 	
@@ -232,37 +158,4 @@ def SentimentDictionary_Read(FilePath):
 			SentDict.append(line.rstrip())
 
 	return SentDict
-
-
-
-def main():
-	# EXAMPLE USAGE
-
-	# Some info to apply morphological disambiguation and create stemmed form 
-	PreprocessedCorpusPath='/home/osboxes/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_new.csv'
-	posfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunpos_ki.txt'
-	morphfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunmorph_ki.txt'
-	stopwordsFilePath='/home/osboxes/Desktop/SentimentAnalysisHUN/resources/StopwordLexicon/stopwords.txt'
-	
-	# Morphological disambiguation (wordsArray contains original words - for easier n-gram filtering, disArray for perfect output)
-	(wordsArray, disArray) = MorphologicalDisambiguation(posfilePath, morphfilePath)
-	stemmedArray = StemmedForm(disArray, 0)
-	
-	# Substitute rare words with specific label '_rare_'
-	substArray = replace_if_occurances(stemmedArray, get_words_from_array(stemmedArray), 3, '_rare_')
-
-	# 5-gram usage example
-	n_Array = n_gram(wordsArray, substArray, PreprocessedCorpusPath, 5, 1)
-
-	# Stopword filtering 
-	stopwordfiltArray = StopWordFilter(n_Array, stopwordsFilePath)
-
-	# Number filtering
-	filtArray = NumberFilter(stopwordfiltArray)
-
-	print SentimentDictionary_Read('/home/osboxes/Desktop/SentimentAnalysisHUN/resources/SentimentLexicons/PrecoNeg.txt')
-	
-
-if __name__ == '__main__':
-	main()
 

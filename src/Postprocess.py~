@@ -1,21 +1,12 @@
 # -*- coding: utf-8 -*-
 import os, sys, getopt, csv
-import subprocess, linecache
-from stop_words import get_stop_words
-from Morphological_Disambiguation import StemmedForm
-from Morphological_Disambiguation import MorphologicalDisambiguation
+from polyglot.text import Text
+from itertools import chain
 
 
 def StopWordFilter(sentencesArray, stopwordsFilePath):
-	# Stopwords in unicode format	
-	#stopwords = get_stop_words('hu')
-	
-	# These words are missing from stopwords
-	#stopwords.append('is')
-	#stopwords.append('le')
-
 	stopwords = []
-	stopfile = open('/home/osboxes/Desktop/SentimentAnalysisHUN/resources/stopwords.txt','rb')
+	stopfile = open(stopwordsFilePath,'rb')
 	for line in stopfile:
     		if not line.strip().startswith("#"):
         		stopwords.append(line.rstrip().decode('utf8'))
@@ -44,28 +35,55 @@ def NumberFilter(sentencesArray):
 
 	return filteredArray
 
-def main():
-	MorphResultsFilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/morph_ki.txt'
-	PreprocessedCorpusPath='/home/osboxes/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_new.csv'
-	TFIDFthreshold=0.4	
-	stopwordsFilePath='/home/osboxes/Desktop/SentimentAnalysisHUN/resources/stopwords.txt'
-	IntervalNumber=5
-	OnOffFlag=1
-	
-	posfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunpos_ki.txt'
-	morphfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunmorph_ki.txt'
-	
-	# Morphological disambiguation
-	(wordsArray, disArray) = MorphologicalDisambiguation(posfilePath, morphfilePath)
-	Array = StemmedForm(disArray, 0)
-	
-	# Stopword filtering
-	filtArray = StopWordFilter(Array, stopwordsFilePath)
-	
-	# Number character filtering
-	print NumberFilter(filtArray)	
-	
+# This function creates 3 dictionaries for location, person and organization. Important, every result set is in UNICODE encoding! 
+def NER_Dictionary(CorpusFilePath):
+	corpusfile = open(CorpusFilePath, 'rb')
+	csvreader = csv.reader(corpusfile, delimiter='\t')
 
-if __name__ == '__main__':
-	main()
+	locationList = []
+	personList = []
+	organizationList = []
+
+	for line in csvreader:
+		try:
+			blob = str(line[4]).decode('latin2')
+			text = Text(blob)
+			for sent in text.sentences:
+				for entity in sent.entities:
+					tag = entity.tag
+					for element in entity:
+						if element.encode('latin2') not in chain(personList, locationList, organizationList):
+							if 'PER' in tag:
+								personList.append(element.encode('latin2'))
+							elif 'LOC' in tag:
+								locationList.append(element.encode('latin2'))
+							elif 'ORG' in tag:
+								organizationList.append(element.encode('latin2'))
+		except:
+			pass
+	
+	# Filter out some mistaken nouns
+	person = []
+	for word in personList:
+		if word[0].isupper():
+			person.append(word)
+
+	# Sort them to make it more understandable for human beings
+	locationList = sorted(locationList)
+	personList = sorted(person)
+	organizationList = sorted(organizationList)	
+
+	return (locationList, personList, organizationList)
+
+def NERfilter(sentencesArray, filterList):
+	filteredArray = []
+	for sentence in sentencesArray:
+		filteredSentence = []
+		for word in sentence:
+			if word not in filterList:			
+				filteredSentence.append(word)
+			
+		filteredArray.append(filteredSentence)
+
+	return filteredArray
 
