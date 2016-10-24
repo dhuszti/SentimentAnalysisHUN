@@ -8,20 +8,25 @@ Tool is accessable via a HTTP POST request at http://<ip_addr_of_docker>:5000/se
 Usage example:
 curl -i -H "Content-Type: application/json" -X POST -d "{"sentence": "Budapest az egyik legszebb város."}" http://192.168.196.144:5000/sentiment
 
-Installation (now under construction):
+Installation:
 1. Native way
-	- prerequisite: linux OS (Ubuntu, Debian, RHEL, CentOS)
+	- prerequisite: linux OS
+		- Done: Ubuntu
+		- Coming very soon: Debian, RHEL, CentOS)
 	- launch ./install.sh
 
 2. Docker
 	- download and install docker
 	- pull and run container
 
-Following external open-source tools were applied:
+Following external open-source tools were applied, so
 1. NLP tools
 - HunToken
 - HunPoS
 - Ocamorph & HunMorph
-- Polyglot NER 
+- Polyglot NER
 
-2. Python Flask REST API - http://flask.pocoo.org/
+2. OpinHUBank sentiment corpus
+
+3. Python Flask REST API - http://flask.pocoo.org/
+
