@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import csv, re
+from os.path import expanduser
 
 '''
 Sentiment corpus preprocessing - only for OpinHuBank corpus
@@ -68,10 +69,13 @@ def CorpusPreprocess(in_file, out_file):
 	outputfile.close()
 
 def main():
-	inputfile = '/home/osboxes/Downloads/archive/OpinHuBank_20130106.csv' 
-	outputfile = '/home/osboxes/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_new_with_posneg.csv'
+	# Get home folder
+	homeFolder = expanduser('~')
+	
+	# Launch corpus preprocess function
+	inputfile = homeFolder + '/SentimentAnalysisHUN-master/resources/SentimentCorpus/OpinHuBank_20130106.csv' 
+	outputfile = homeFolder + '/SentimentAnalysisHUN-master/tempfiles/OpinHuBank_20130106_posneg.csv'
 	CorpusPreprocess(inputfile, outputfile)
 
 if __name__ == '__main__':
 	main()
-
