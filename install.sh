@@ -33,17 +33,14 @@ dpkg-reconfigure dash
 
 # Creating basic directory 
 cd $HOME
-mkdir SentimentAnalysisHUN
-cd SentimentAnalysisHUN
 
-# Download code and NLP tools' files from github repo 
+# Download code from github repo 
 wget https://github.com/dhuszti/SentimentAnalysisHUN/archive/master.zip
-unzip SentimentAnalysisHUN-master.zip
-rm SentimentAnalysisHUN-master.zip
-
+unzip master.zip
+rm master.zip
 
 # Install HunMorph
-cd $HOME/SentimentAnalysisHUN/SentimentAnalysisHUN-master/resources
+cd $HOME/SentimentAnalysisHUN-master/resources
 cd HunMorph
 tar -xvzf morphdb.hu.tar.gz
 tar -xvzf ocamorph.tar.gz
@@ -59,7 +56,7 @@ echo "PATH=${PATH}:$HOME/NLPtools/HunMorph/ocamorph/adm" >> ~/.bashrc
 
 
 # Install HunToken
-cd $HOME/SentimentAnalysisHUN/SentimentAnalysisHUN-master/resources
+cd $HOME/SentimentAnalysisHUN-master/resources
 cd HunToken
 tar -xvzf huntoken-1.6.tar.gz
 rm huntoken-1.6.tar.gz
@@ -68,7 +65,7 @@ make
 make install
 
 # Install HunPos
-cd $HOME/SentimentAnalysisHUN/SentimentAnalysisHUN-master/resources
+cd $HOME/SentimentAnalysisHUN-master/resources
 mkdir HunPos
 cd HunPos
 wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/hunpos/hu_szeged_kr.model.gz
@@ -78,43 +75,60 @@ rm hunpos-1.0-linux.tgz
 gzip -d hu_szeged_kr.model.gz
 
 # Install typoing for Hungarian language
-cd $HOME/SentimentAnalysisHUN/SentimentAnalysisHUN-master/resources
+cd $HOME/SentimentAnalysisHUN-master/resources
 cd Typo
 tar -xvzf ekezo.tar.gz
 tar -xvzf p2iso.tar.gz
 rm ekezo.tar.gz
 rm p2iso.tar.gz
 
+# Install python pip
+apt-get --assume-yes install python-dev
+easy_install pip
+
+# Install python sklearn with prerequisites
+apt-get --assume-yes install libblas-dev liblapack-devel libatlas-base-dev gfortran
+pip install -U numpy
+pip install -U scipy
+pip install -U scikit-learn
+
+# Install NLTK
+pip install -U nltk
+
 # Install NER from Polyglot http://polyglot.readthedocs.io/en/latest/NamedEntityRecognition.html
-apt-get --assume-yes install python-numpy libicu-dev
+apt-get --assume-yes install libicu-dev
+apt-get --assume-yes install polyglot
 pip install polyglot
+# TODO: install problem
 polyglot download embeddings2.hu ner2.hu
 
 # Install REST API framework & extension for ip determination
-pip install Flask
-pip install netifaces
-pip install requests
-
-# Set permissions to access files not only as root privilege user
-chmod -R +r $HOME/SentimentAnalysisHUN
+pip install -U Flask
+pip install -U netifaces
+pip install -U requests
 
 # -----------------------------------------------
 # -------------- Test NLP tools  ----------------
 # -----------------------------------------------
 
 # Test NLP tools, whether there was any installation error
-cd $HOME/SentimentAnalysisHUN
+cd $HOME/SentimentAnalysisHUN-master/
 mkdir tempfiles
 cd tempfiles
 echo "Teszteljük a következő nyelvi eszközöket, Kiss Géza." >> test.txt 
 # HunMorph test
-echo "ablakot" | ocamorph --aff $HOME/SentimentAnalysisHUN/SentimentAnalysisHUN-master/resources/HunMorph/morphdb.hu/morphdb_hu.aff --dic $HOME/SentimentAnalysisHUN/SentimentAnalysisHUN-master/resources/HunMorph/morphdb.hu/morphdb_hu.dic
+echo "ablakot" | ocamorph --aff $HOME/SentimentAnalysisHUN-master/resources/HunMorph/morphdb.hu/morphdb_hu.aff --dic $HOME/SentimentAnalysisHUN-master/resources/HunMorph/morphdb.hu/morphdb_hu.dic --bin $HOME/SentimentAnalysisHUN-master/resources/HunMorph/morphdb.hu/morphdb_hu.bin
 # HunToken test
 cat test.txt | huntoken > test_huntoken.xml
 cat test_huntoken.xml
 # HunPos test
-echo "ablakot" | $HOME/NLPtools/hunpos/hunpos-1.0-linux/hunpos-tag  $HOME/NLPtools/hunpos/hu_szeged_kr.model
+echo "ablakot" | $HOME/SentimentAnalysisHUN-master/resources/HunPos/hunpos-1.0-linux/hunpos-tag  $HOME/SentimentAnalysisHUN-master/resources/HunPos/hu_szeged_kr.model
 # Typoing test
-echo "teszteles" | $HOME/SentimentAnalysisHUN/SentimentAnalysisHUN-master/resources/Typo/ekezo/ekito.run | $HOME/SentimentAnalysisHUN/SentimentAnalysisHUN-master/resources/Typo/p2iso
+echo "teszteles" | $HOME/SentimentAnalysisHUN-master/resources/Typo/ekezo/ekito.run | $HOME/SentimentAnalysisHUN-master/resources/Typo/p2iso
 rm test.txt
 rm test_huntoken.xml
+
+# ---------------------------------------------------
+# Set permissions to access files not only as root privilege user
+# ---------------------------------------------------
+chmod 777 -R $HOME/SentimentAnalysisHUN-master/*
