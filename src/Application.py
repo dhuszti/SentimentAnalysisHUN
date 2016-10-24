@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import netifaces, logging, subprocess, requests
 from sklearn.externals import joblib
+from os.path import expanduser
 
 # Flask was used as REST API framework http://flask.pocoo.org/docs/0.11/
 # Tutorial followed https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
@@ -21,13 +22,16 @@ logger.addHandler(streamhandler)
 logger.setLevel(logging.WARNING)
 
 # GLOBAL VARIABLES
-ML_model = joblib.load(open('SentAnalysisModel.pkl'))						# Load ML model file
-xmlparserFilePath = '$HOME/Desktop/SentimentAnalysisHUN/src/xmlparser.py'
-hunpostagFilePath = '$HOME/NLPtools/hunpos/hunpos-1.0-linux/hunpos-tag'
-szegedmodelFilePath = '$HOME/NLPtools/hunpos/hu_szeged_kr.model'
-ocamorphFilePath = '$HOME/NLPtools/HunMorph/ocamorph/adm/morphdb_hu.bin'
-posFilePath = '/tmp/sentanalysis_pos.txt'
-morphFilePath = '/tmp/sentanalysis_morph.txt'
+homeFolder = expanduser('~') 	# Get home folder
+ML_model = joblib.load(open('SentAnalysisModel.pkl'))			# Load ML model file
+
+xmlparserFilePath = homeFolder + '/SentimentAnalysisHUN-master/src/xmlparser.py'
+hunpostagFilePath = homeFolder + '/SentimentAnalysisHUN-master/resources/HunPos/hunpos-1.0-linux/hunpos-tag'
+szegedmodelFilePath = homeFolder + '/SentimentAnalysisHUN-master/resources/HunPos/hu_szeged_kr.model'
+ocamorphFilePath = homeFolder + '/SentimentAnalysisHUN-master/resources/HunMorph/morphdb.hu/morphdb_hu.bin'
+posFilePath = '/tmp/SentimentAnalysis_pos.txt'
+morphFilePath = '/tmp/SentimentAnalysis_morph.txt'
+
 githubUrl = 'https://raw.githubusercontent.com/dhuszti/SentimentAnalysisHUN/master/README'
 
 
@@ -112,7 +116,7 @@ def main():
 	# Run application with REST API
 	print "\nThis is an open-source Sentiment Analysis tool created for Hungarian language.\n"
 	print "Please use sentence tag for adding input\n"
-	print "Usage example:\ncurl -i -H 'Content-Type: application/json' -X POST -d '{'sentence': 'Budapest az egyik legszebb város.'}' http://192.168.196.144:5000/sentiment\n"
+	print "Usage example:\ncurl -i -H 'Content-Type: application/json' -X POST -d '{"sentence": "Budapest az egyik legszebb város."}' http://192.168.196.146:5000/sentiment\n"
 	print "Please use url below to access API from other machine:"
 	app.run(host=ip_addr, port=5000)
 	
