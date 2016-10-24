@@ -1,9 +1,10 @@
 # Import basics libs
-import csv, pandas
+import csv
 from numpy import array
 from numpy import recarray
 from math import sqrt
 from scipy.stats import pearsonr
+from os.path import expanduser
 
 # Import sklearn functions
 from sklearn.metrics import classification_report, f1_score, accuracy_score, confusion_matrix, mean_squared_error, mean_absolute_error
@@ -126,15 +127,18 @@ def morphAnalysis_and_filtering(pos_onoff, n_gram_onoff, n_gram_value):
 	return filtArray
 
 
+# Get home folder
+homeFolder = expanduser('~')
+
 # GLOBAL VARIABLES
 """ These are used everywhere """ 
-preprocessedCorpusPath='/home/osboxes/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_new_with_posneg.csv'
-posfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunpos_ki_with_posneg.txt'
-morphfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunmorph_ki_with_posneg.txt'
-stopwordsFilePath='/home/osboxes/Desktop/SentimentAnalysisHUN/resources/stopwords.txt'
-posLexiconPath='/home/osboxes/Desktop/SentimentAnalysisHUN/resources/SentimentLexicons/PrecoPos.txt'
-negLexiconPath='/home/osboxes/Desktop/SentimentAnalysisHUN/resources/SentimentLexicons/PrecoNeg.txt'
-MLmodelPath='/home/osboxes/Desktop/SentimentAnalysisHUN/src/SentAnalysisModel.pkl'
+preprocessedCorpusPath = homeFolder + '/SentimentAnalysisHUN-master/tempfiles/OpinHuBank_20130106_posneg.csv'
+posfilePath = homeFolder + '/SentimentAnalysisHUN-master/tempfiles/hunpos_posneg.txt'
+morphfilePath = homeFolder + '/SentimentAnalysisHUN-master/tempfiles/hunmorph_posneg.txt'
+stopwordsFilePath = homeFolder + '/SentimentAnalysisHUN-master/resources/StopwordLexicon/stopwords.txt'
+posLexiconPath = homeFolder + '/SentimentAnalysisHUN-master/resources/SentimentLexicons/PrecoPos.txt'
+negLexiconPath = homeFolder + '/SentimentAnalysisHUN-master/resources/SentimentLexicons/PrecoNeg.txt'
+MLmodelPath = homeFolder + '/SentimentAnalysisHUN-master/src/SentAnalysisModel.pkl'
 
 # MAIN FUNCTION FOR CREATING CLASSIFICATION ON TOP OF MORPHOLOGICAL ANALYSIS AND FILTERING
 """ 
@@ -161,11 +165,11 @@ def main():
 
 	# gridsearch for automated machine learning with cross validation	
 	grid = GridSearchCV(
-	    pipeline,  																	# pipeline from above
-	    params,  																	# parameters to tune via cross validation
-	    refit=True,  																# fit using all available data at the end, on the best found param combination
-	    n_jobs=-1,  																# number of cores to use for parallelization; -1 for "all cores"
-	    scoring='accuracy',  														# what score are we optimizing?
+	    pipeline,					# pipeline from above
+	    params, 					# parameters to tune via cross validation
+	    refit=True,					# fit using all available data at the end, on the best found param combination
+	    n_jobs=-1, 					# number of cores to use for parallelization; -1 for "all cores"
+	    scoring='accuracy',				# what score are we optimizing?
 	    cv=StratifiedKFold(n_splits=10).get_n_splits(trainingSet, trainingLabel),  	# what type of cross validation to use
 	)
 
@@ -177,9 +181,9 @@ def main():
 
 	# evaluation part with precision, recall, f-score
 	predictions = clf.predict(testSet)					# predictions for test set
-	print "Contegency table"
+	print "\nContegency table"
 	print confusion_matrix(testLabel, predictions)		# TP, TF, ... values
-	print "Evaluation scores"
+	print "\nEvaluation scores"
 	print classification_report(testLabel, predictions)	# precision, recall, f-score
 	
 	# Pearson correlation - if possible
