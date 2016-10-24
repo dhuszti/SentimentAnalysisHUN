@@ -19,7 +19,7 @@ Installation:
 	- download and install docker
 	- pull and run container
 
-Following external open-source tools were applied, so
+Following external open-source tools were applied, some of their installer files are collected at /resources folder
 1. NLP tools
 - HunToken
 - HunPoS
