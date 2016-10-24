@@ -11,7 +11,7 @@ Usage:
 ./MorphologicalAnalysis.sh -i <inputfile> -p <output_posfile> -m <output_morphfile>
 
 Example usage:
-./MorphologicalAnalysis.sh -i $HOME/NLPtools/SentAnalysisHUN-master/OpinHuBank_20130106_new_with_posneg.csv -p $HOME/NLPtools/SentAnalysisHUN-master/hunpos_ki_with_posneg1.txt -m $HOME/NLPtools/SentAnalysisHUN-master/hunmorph_ki_with_posneg1.txt
+./MorphologicalAnalysis.sh -i $HOME/SentimentAnalysisHUN-master/tempfiles/OpinHuBank_20130106_posneg.csv -p $HOME/SentimentAnalysisHUN-master/tempfiles/hunpos_posneg.txt -m $HOME/SentimentAnalysisHUN-master/tempfiles/hunmorph_posneg.txt
 
 COMMENT
 
@@ -43,11 +43,11 @@ while getopts ":i:p:m:" opt; do
 done
 
 # Necesseraly files for launching analysis tasks. They are predifened by installation.
-HunTokenPath=$HOME/NLPtools/HunToken/huntoken-1.6/bin/huntoken
-HunPosTagPath=$HOME/NLPtools/hunpos/hunpos-1.0-linux/hunpos-tag
-SzegedModelPath=$HOME/NLPtools/hunpos/hu_szeged_kr.model
-XmlParserPath=$HOME/Desktop/SentimentAnalysisHUN/src/xmlparser.py
-OcamorphBinPath=$HOME/NLPtools/HunMorph/ocamorph/adm/morphdb_hu.bin
+HunTokenPath=$HOME/SentimentAnalysisHUN-master/resources/HunToken/huntoken-1.6/bin/huntoken
+HunPosTagPath=$HOME/SentimentAnalysisHUN-master/resources/HunPos/hunpos-1.0-linux/hunpos-tag
+SzegedModelPath=$HOME/SentimentAnalysisHUN-master/resources/HunPos/hu_szeged_kr.model
+XmlParserPath=$HOME/SentimentAnalysisHUN-master/src/xmlparser.py
+OcamorphBinPath=$HOME/SentimentAnalysisHUN-master/resources/HunMorph/morphdb.hu/morphdb_hu.bin
 
 # Hunpos analysis
 cat $SentimentCorpusPath | cut -f5 -d$'\t' | huntoken | $XmlParserPath | sed ':a;N;$!ba;s/\n\n/\n/g' | $HunPosTagPath $SzegedModelPath > $HunPosOutputPath
