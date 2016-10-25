@@ -3,6 +3,14 @@ import os, sys, getopt
 import subprocess, linecache
 import tempfile, csv
 
+""" This python file contains some functions regarding to morphological diasmbiguation.
+Functions:
+- MorphologicalDisambiguation: can decide from PoS and morph results the proper morphologically analyzed form of each tokens.
+	As input it takes pos and morph file, and gives a list as output.
+- StemmedForm: can truncate morphological disambiguated form to use only its base form (stemmed form).
+- SaveToFile: is only for test purposes, to save results to external file.
+"""
+
 def MorphologicalDisambiguation(posfilePath, morphfilePath):
 	
 	# HunPos outputs read into an array	
@@ -111,17 +119,4 @@ def SaveToFile(wordsArray, disambigutedArray, outputFilePath):
 		outfile.write('\n')
 	
 	outfile.close()
-
-
-def main():
-	posfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunpos_ki.txt'
-	morphfilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/hunmorph_ki.txt'
-	ofilePath='/home/osboxes/NLPtools/SentAnalysisHUN-master/morph_ki.txt'
 	
-	(wordsArray, disArray) = MorphologicalDisambiguation(posfilePath, morphfilePath)
-	SaveToFile(wordsArray, disArray, ofilePath)
-
-	print StemmedForm(disArray, 0)
-
-if __name__ == '__main__':
-	main()
