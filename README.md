@@ -19,7 +19,7 @@ Docker container installation is suggested.
 
 ##Usage:
 ###1. Launch application with: 
-- Native: `$HOME/SentimentAnalysisHUN-master/src/Application.py`
+- Native: `python $HOME/SentimentAnalysisHUN-master/src/Application.py`
 - Docker: `docker exec -it sentanalysishun python $HOME/SentimentAnalysisHUN-master/src/Application.py`
 
 ###2. Usage of REST API:
