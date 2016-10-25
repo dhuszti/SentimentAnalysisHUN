@@ -84,6 +84,7 @@ rm p2iso.tar.gz
 
 # Install python pip
 apt-get --assume-yes install python-dev
+apt-get --assume-yes install python-setuptools
 easy_install pip
 
 # Install python sklearn with prerequisites
