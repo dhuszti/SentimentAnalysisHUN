@@ -37,7 +37,7 @@ def pipeline_TFIDF_NaiveBayes(posLexicon, negLexicon):
 
 			# weight components in FeatureUnion
 			transformer_weights={
-			    'pca': 1.0,
+			    'tfidf': 1.0,
 			    'sentdic_positive': 0.5,
 			    'sentdic_negative': 0.5,
 			},
