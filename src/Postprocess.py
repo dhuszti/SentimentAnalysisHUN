@@ -3,6 +3,13 @@ import os, sys, getopt, csv
 from polyglot.text import Text
 from itertools import chain
 
+""" This python file contains functions for postprocessing phase of morphological and PoS analyzed data.
+Functions:
+- StopwordFilter: uses external stopword list to filter them out from input list.
+- NumberFilter: uses a very light filtering of number characters out from input list. 
+- NER_Dictionary: is a function for creating 3 Named Entity Recognition dictionaries (location, names, organizations) as return lists.
+- NERFilter: uses dictionaries mainly created by NER_Dictionary to filter entities from input list.
+"""
 
 def StopWordFilter(sentencesArray, stopwordsFilePath):
 	stopwords = []
