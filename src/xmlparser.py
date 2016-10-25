@@ -3,6 +3,10 @@
 
 import sys, os, fileinput
 
+""" A light xml parser application which is good for transforming HunToken's xml based output into plain lines, 
+which is necesseraly for input data form of HunPoS (part-of-speech tagging) and HunMorph (morphological analysis).
+It is embedded in MorphologicalAnalysis.sh file's shell pipeline. """
+
 def main():
 	# Parse incoming XML file
 	try:	
