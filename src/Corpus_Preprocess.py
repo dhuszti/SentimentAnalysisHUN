@@ -2,8 +2,11 @@
 import csv, re
 from os.path import expanduser
 
-'''
-Sentiment corpus preprocessing - only for OpinHuBank corpus
+''' The function CorpusPreprocess can transform OpinHuBank sentiment coprus into
+digestable format for next process phrases. It can take corpus with every value
+(positive/neutral/negative) or able to filter it to positive/negative ones.
+This can be made with small modifications on "if reviewScore ..." if it is "!=0"
+then later mentioned corpus is going to be created.
 
 Parameters:
 - in_file: whole url of source file
