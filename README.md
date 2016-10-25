@@ -23,13 +23,13 @@ Docker container installation is suggested.
 	Docker: **docker exec -it dhuszti/sentanalysis python $HOME/SentimentAnalysisHUN/src/Application.py**
 
 ###2. Usage of REST API:
-	- Based on a HTTP POST request.
-	- Receive an url as launch: **http://<ip_addr_of_docker>:5000/sentiment**
-	- Please use sentence tag for adding input like this **{'sentence': '<write your input here>'}** to enter your input.
-	- Example: **curl -i -H "Content-Type: application/json" -X POST -d '{"sentence": "Budapest az egyik legszebb város."}' http://192.168.196.144:5000/sentiment**
+- Based on a HTTP POST request.
+- Receive an url as launch: **http://<ip_addr_of_docker>:5000/sentiment**
+- Please use sentence tag for adding input like this **{'sentence': '<write your input here>'}** to enter your input.
+- Example: **curl -i -H "Content-Type: application/json" -X POST -d '{"sentence": "Budapest az egyik legszebb város."}' http://192.168.196.144:5000/sentiment**
 
 ##Sources
-Following external open-source tools were applied, some of their installer files are collected at /resources folder
+Following external open-source tools were applied, some of their installer files are collected at /resources folder. All of their rights are owned by their creators.
 
 1. NLP tools - HunToken, HunPoS, Ocamorph & HunMorph, Polyglot NER
 2. OpinHUBank sentiment corpus
