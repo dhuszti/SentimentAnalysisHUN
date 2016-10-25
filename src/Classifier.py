@@ -188,7 +188,7 @@ def main():
 	
 	# Pearson correlation - if possible
 	try:
-		paerson = pearsonr(testLabel, predictions)
+		pearson = pearsonr(testLabel, predictions)
 		print "Pearson correlation"
 		print pearson
 	except:
