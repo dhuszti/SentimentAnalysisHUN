@@ -20,7 +20,7 @@ def pipeline_TFIDF_NaiveBayes(posLexicon, negLexicon):
 			    # TF-IDF to have a more accurate overview on words, which have a huge influance on sentiment analysis
 			    ('tfidf', Pipeline([
 					('basic_cv', CountVectorizer(encoding='latin2')),
-					('tfidf', TfidfTransformer()),
+					('tfidf_trans', TfidfTransformer()),
 			    ])),
 
 			    # Positive and negative sentiment dictionary occurances as a feature
