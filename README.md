@@ -14,8 +14,8 @@ Docker container installation is suggested.
 ###2. Docker 
 - Install Docker for you Operation System: (https://docs.docker.com/engine/installation)
 - Docker repo: (https://hub.docker.com/r/dhuszti/sentanalysis/)
-- Download container: `docker pull dhuszti/sentanalysis:v1.0.0`
-- Run container: `docker run -d -it --privileged=true --net=host --name=sentanalysishun dhuszti/sentanalysis:v1.0.0`
+- Download container: `docker pull dhuszti/sentanalysis`
+- Run container: `docker run -d -it --privileged=true --net=host --name=sentanalysishun dhuszti/sentanalysis`
 
 ##Usage:
 ###1. Launch application with: 
@@ -24,7 +24,7 @@ Docker container installation is suggested.
 
 ###2. Usage of REST API:
 - Based on a HTTP POST request.
-- Receive an url as launch: `http://ip_addr_of_docker:5000/sentiment`
+- Receive an url (substitute to example): `http://ip_addr_of_docker:5000/sentiment`
 - Please use sentence tag for adding input like this `{'sentence': '<write your input here>'}` to enter your input.
 - Example: `curl -i -H "Content-Type: application/json" -X POST -d '{"sentence": "Budapest az egyik legszebb város."}' http://192.168.196.144:5000/sentiment`
 
