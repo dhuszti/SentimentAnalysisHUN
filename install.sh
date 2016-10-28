@@ -98,7 +98,6 @@ pip install -U nltk
 
 # Install NER from Polyglot http://polyglot.readthedocs.io/en/latest/NamedEntityRecognition.html
 apt-get --assume-yes install libicu-dev
-apt-get --assume-yes install polyglot
 pip install polyglot
 # TODO: install problem
 polyglot download embeddings2.hu ner2.hu
