@@ -17,11 +17,6 @@ apt-get --assume-yes install texinfo
 apt-get --assume-yes install ocaml-findlib
 apt-get --assume-yes install texlive
 
-# Packages for SzegedNER
-apt-get update
-apt-get --assume-yes install default-jre
-apt-get --assume-yes install default-jdk
-
 # Packages for HunPos
 apt-get --assume-yes install --reinstall libc6-i386
 dpkg-reconfigure dash
@@ -31,7 +26,7 @@ dpkg-reconfigure dash
 # ----- Downloading and installing tools --------
 # -----------------------------------------------
 
-# Creating basic directory 
+# Change HOME directory where installation is going to be placed
 cd $HOME
 
 # Download code from github repo 
@@ -99,7 +94,6 @@ pip install -U nltk
 # Install NER from Polyglot http://polyglot.readthedocs.io/en/latest/NamedEntityRecognition.html
 apt-get --assume-yes install libicu-dev
 pip install polyglot
-# TODO: install problem
 polyglot download embeddings2.hu ner2.hu
 
 # Install REST API framework & extension for ip determination
