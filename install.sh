@@ -94,7 +94,7 @@ pip install -U nltk
 # Install NER from Polyglot http://polyglot.readthedocs.io/en/latest/NamedEntityRecognition.html
 apt-get --assume-yes install libicu-dev
 pip install polyglot
-polyglot download embeddings2.hu ner2.hu
+polyglot download embeddings2.hu ner2.hu ner2.cs embeddings2.cs
 
 # Install REST API framework & extension for ip determination
 pip install -U Flask
