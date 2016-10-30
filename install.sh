@@ -14,59 +14,59 @@ OSdistribution=${OSdistribution// /}
 # installer depends on OS distibution
 if [[ "$OSdistribution" == 'CentOSLinux' ] || [ "$OSdistribution" == 'RedHat' ]]
 then
-  # Basic packages to install
-  yum update
-  yum -y groupinstall 'Development Tools'
-	yum -y install cvs
+	  # Basic packages to install
+	  yum update
+	  yum -y groupinstall 'Development Tools'
+	  yum -y install cvs
 
-  # Packages for HunMorph tool
-  yum -y install ocaml
-	yum -y install texinfo
-	yum -y install ocaml-findlib
-	yum -y install texlive
+	  # Packages for HunMorph tool
+	  yum -y install ocaml
+	  yum -y install texinfo
+	  yum -y install ocaml-findlib
+	  yum -y install texlive
 
-  # Packages for HunPos
-  yum -y install glibc.i686
-  dpkg-reconfigure dash
+	  # Packages for HunPos
+	  yum -y install glibc.i686
+	  dpkg-reconfigure dash
 
-  # Install python pip
-  yum -y install python-dev
-  yum -y install python-setuptools
-  easy_install pip
+	  # Install python pip
+	  yum -y install python-dev
+	  yum -y install python-setuptools
+	  easy_install pip
 
-  # Python skearn prerequisites
-  yum -y install libblas-dev liblapack-devel libatlas-base-dev gfortran
+	  # Python skearn prerequisites
+	  yum -y install libblas-dev liblapack-devel libatlas-base-dev gfortran
 
-  # Polyglot prerequisite
-  yum -y install libicu-dev
+	  # Polyglot prerequisite
+	  yum -y install libicu-dev
   
 elif [[ "$OSdistribution" == 'Ubuntu' ] || [ "$OSdistribution" == 'Debian' ]]
 then
-  # Basic packages to install
-  apt-get update
-  apt-get --assume-yes install build-essential
-  apt-get --assume-yes install cvs
+	  # Basic packages to install
+	  apt-get update
+	  apt-get --assume-yes install build-essential
+	  apt-get --assume-yes install cvs
 
-  # Packages for HunMorph tool
-  apt-get --assume-yes install ocaml
-  apt-get --assume-yes install texinfo
-  apt-get --assume-yes install ocaml-findlib
-  apt-get --assume-yes install texlive
+	  # Packages for HunMorph tool
+	  apt-get --assume-yes install ocaml
+	  apt-get --assume-yes install texinfo
+	  apt-get --assume-yes install ocaml-findlib
+	  apt-get --assume-yes install texlive
 
-  # Packages for HunPos
-  apt-get --assume-yes install --reinstall libc6-i386
-  dpkg-reconfigure dash
+	  # Packages for HunPos
+	  apt-get --assume-yes install --reinstall libc6-i386
+	  dpkg-reconfigure dash
 
-  # Install python pip
-  apt-get --assume-yes install python-dev
-  apt-get --assume-yes install python-setuptools
-  easy_install pip
+	  # Install python pip
+	  apt-get --assume-yes install python-dev
+	  apt-get --assume-yes install python-setuptools
+	  easy_install pip
 
-  # Python skearn prerequisites
-  apt-get --assume-yes install libblas-dev liblapack-devel libatlas-base-dev gfortran
+	  # Python skearn prerequisites
+	  apt-get --assume-yes install libblas-dev liblapack-devel libatlas-base-dev gfortran
 
-  # Polyglot prerequisite
-  apt-get --assume-yes install libicu-dev
+	  # Polyglot prerequisite
+	  apt-get --assume-yes install libicu-dev
 
 else
 	echo "OS distribution is not supported."
