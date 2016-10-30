@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-import netifaces, logging, subprocess, requests
-from sklearn.externals import joblib
-from os.path import expanduser
+import netifaces, logging, requests
 
 # Flask was used as REST API framework http://flask.pocoo.org/docs/0.11/
-# Tutorial followed https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
+# Tutorial https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
 from flask import Flask, jsonify, abort, make_response, request, url_for
 
-from Morphological_Disambiguation import MorphologicalDisambiguation, StemmedForm
-from Classifier import CountVectorizerTransform_input
+from Application_functions import OverallSentiment
+from Application_functions import NERsentiment
+from Application_functions import MorphAnalysis
+from Application_functions import NER
 
-# LOGGING INIT
+# Initialization of logger
 logger = logging.getLogger('SentimentAnalysisHUN')
 filehandler = logging.FileHandler('/var/tmp/SentimentAnalysisHUN.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
@@ -21,25 +21,21 @@ streamhandler.setFormatter(formatter)
 logger.addHandler(streamhandler)
 logger.setLevel(logging.WARNING)
 
-# GLOBAL VARIABLES
-homeFolder = expanduser('~') 	# Get home folder
-ML_model = joblib.load(open('SentAnalysisModel.pkl'))			# Load ML model file
-
-xmlparserFilePath = homeFolder + '/SentimentAnalysisHUN-master/src/xmlparser.py'
-hunpostagFilePath = homeFolder + '/SentimentAnalysisHUN-master/resources/HunPos/hunpos-1.0-linux/hunpos-tag'
-szegedmodelFilePath = homeFolder + '/SentimentAnalysisHUN-master/resources/HunPos/hu_szeged_kr.model'
-ocamorphFilePath = homeFolder + '/SentimentAnalysisHUN-master/resources/HunMorph/morphdb.hu/morphdb_hu.bin'
-posFilePath = '/tmp/SentimentAnalysis_pos.txt'
-morphFilePath = '/tmp/SentimentAnalysis_morph.txt'
-
-githubUrl = 'https://raw.githubusercontent.com/dhuszti/SentimentAnalysisHUN/master/README'
+# Github Read
+githubUrl = 'https://github.com/dhuszti/SentimentAnalysisHUN/blob/master/README.md'
 
 
-# REST API creation
-""" All rights are reserved by open-source Flask REST API framework. """
+""" This is a REST API for easier user interface access to the sentiment analysis tool
+
+Defined functions:
+- GET for /: overview page contains usage example
+- POST for /sentiment: request for an overall sentiment score
+- POST for /sentiment_verbose: request for more detailed (entity focused) sentiment scores
+
+*** All rights are reserved by open-source Flask REST API framework. *** """
+
 app = Flask(__name__)
 
-# ERROR HANDLERS
 @app.errorhandler(400)
 def not_found(error):
     return make_response(jsonify( { 'error': 'Bad request' } ), 400)
@@ -48,55 +44,60 @@ def not_found(error):
 def not_found(error):
     return make_response(jsonify( { 'error': 'Not found' } ), 404)
 
-# Overview page for sentiment analysis tool
 @app.route('/', methods = ['GET'])
 def description():
     return requests.get(githubUrl).text
 
-# HTTP POST REQUEST FOR SENTIMENT ANALYSIS
 @app.route('/sentiment', methods=['POST'])
 def sentiment():
-    if not request.json or not 'sentence' in request.json:
-        abort(400)
+	if not request.json or not 'sentence' in request.json:
+		abort(400)
+	try:
+		# get morphological analyzed output
+		morphAnalyzed = MorphAnalysis(request.json['sentence'])
 
-    sentiment = {
-        'sentence': request.json['sentence'].encode('utf8'),
-        #'entity': 'Sando Chan',
-		'sentiment': SentimentAnalysis(request.json['sentence'])
-    }
-  
-    return jsonify({'sentiment': sentiment}), 201
+		# get NER dictionaries extracted from input text		
+		(locationList, personList, organizationList) = NER(request.json['sentence'])
 
+		sentimentList = []
 
+		# call sentiment for overall scores
+		OverallSentiment(request.json['sentence'], morphAnalyzed, sentimentList)
+	except Exception:
+		logger.error("Exception occurred at http post request for /sentiment")
+		logger.exception("Sentiment_exception")
 
-""" Sentiment analysis function for incoming tuple """ 
-def SentimentAnalysis(inputString):
-	# Typoing
-	#cmd = 'echo ' + inputString.encode('latin2') + ' | $HOME/NLPtools/typo/ekezo/ekito.run | $HOME/NLPtools/typo/p2iso '			
-	#p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-	#(typo_out, err) = p.communicate()
+	# return output as jsonify
+	return jsonify(results = sentimentList), 201
 
-	# part-of-speech tagging 
-	cmd = 'echo ' + inputString.encode('latin2') + ' | huntoken | ' + xmlparserFilePath + ' | ' + hunpostagFilePath + ' ' + szegedmodelFilePath + ' > ' + posFilePath			
-	p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-	(pos_out, err) = p.communicate()
+@app.route('/sentiment_verbose', methods=['POST'])
+def sentiment_verbose():
+	if not request.json or not 'sentence' in request.json:
+		abort(400)
+
+	try:
+		# get morphological analyzed output
+		morphAnalyzed = MorphAnalysis(request.json['sentence'])
 	
-	# morphological analysis
-	cmd = 'echo ' + inputString.encode('latin2') + ' | huntoken | ' + xmlparserFilePath + ' | ocamorph --bin ' + ocamorphFilePath + ' > ' + morphFilePath			
-	p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-	(morph_out, err) = p.communicate()
+		# get NER dictionaries extracted from input text		
+		(locationList, personList, organizationList) = NER(request.json['sentence'])
 
-	# morph disambiguation with stemmed form without POS tagging
-	(wordsArray, disArray) = MorphologicalDisambiguation(posFilePath, morphFilePath)
-	stemmedArray = StemmedForm(disArray, 0)
-	
-	# convert every word to lowercase
-	stemmedArray = [[word.lower() for word in sent] for sent in stemmedArray]
-	
-	# convert to countvectorizer digestible format
-	List = CountVectorizerTransform_input(stemmedArray)
+		sentimentList = []
 
-	return ML_model.predict(List)[0]
+		# call sentiment for overall scores
+		OverallSentiment(request.json['sentence'], morphAnalyzed, sentimentList)
+
+		# call sentiment for named-entity related scores
+		NERsentiment(morphAnalyzed, locationList, 'location', sentimentList)
+		NERsentiment(morphAnalyzed, personList, 'person', sentimentList)
+		NERsentiment(morphAnalyzed, organizationList, 'organization', sentimentList)
+
+	except Exception:
+		logger.error("Exception occurred at http post request for /sentiment_verbose")
+		logger.exception("Sentiment_verbose_exception")
+
+	# return output as jsonify
+	return jsonify(results = sentimentList), 201
 
 
 
@@ -104,21 +105,42 @@ def SentimentAnalysis(inputString):
 def main():
 	# Network interfaces determination for IP address determination. 
 	# source: http://stackoverflow.com/questions/11735821/python-get-localhost-ip
-	interfaces = netifaces.interfaces()
-	for i in interfaces:
-	    if i == 'lo':
-		continue
-	    iface = netifaces.ifaddresses(i).get(netifaces.AF_INET)
-	    if iface != None:
-		for j in iface:
-		    ip_addr = j['addr']
+	try:	
+		interfaces = netifaces.interfaces()
+		for i in interfaces:
+			if i == 'lo':
+				continue
+			iface = netifaces.ifaddresses(i).get(netifaces.AF_INET)
+			if iface != None:
+				for j in iface:
+					ip_addr = j['addr']
+	except Exception:
+		logger.error("Exception occurred while determining IP address")
+		logger.exception("IP_Address_exception")
 
-	# Run application with REST API
-	print "\nThis is an open-source Sentiment Analysis tool created for Hungarian language.\n"
-	print "Please use sentence tag for adding input\n"
-	print "Usage example:\ncurl -i -H 'Content-Type: application/json' -X POST -d '{"sentence": "Budapest az egyik legszebb város."}' http://192.168.196.146:5000/sentiment\n"
-	print "Please use url below to access API from other machine:"
-	app.run(host=ip_addr, port=5000)
-	
+	# short user guide
+	print "\033[0;32m ****************************************************************************** \033[0m"
+	print "\033[0;32m This is an open-source Sentiment Analysis tool created for Hungarian language. \033[0m"
+	print ""
+	print "\033[0;32m Please use sentence tag for adding user input. Example {\"sentence\": \"Teszt mondat\"} \033[0m"
+	print ""
+	print "\033[0;32m Tool has two different HTTP POST request:\033[0m"
+	print "\033[0;32m	/sentiment: 		for overall score  \033[0m"
+	print "\033[0;32m	/sentiment_verbose: for more detailed scores \033[0m"
+	print ""
+	print "\033[0;32m Usage example from Linux/Mac console with curl: \033[0m"
+	print "\033[0;32m curl -i -H 'Content-Type: application/json' -X POST -d '{\"sentence\": \"Budapest az egyik legszebb város.\"}' http://"+ip_addr+":5000/sentiment \033[0m"
+	print ""
+	print "\033[0;32m For Windows use an REST client like https://github.com/wiztools/rest-client \033[0m"
+	print "\033[0;32m ****************************************************************************** \033[0m"
+	print "\033[0;32m This tool is running on: \033[0m"
+
+	# run application
+	try:
+		app.run(host=ip_addr, port=5000)
+	except Exception:
+		logger.error("Exception occurred while started running application")
+		logger.exception("App_run_exception")
+
 if __name__ == '__main__':
 	main()
