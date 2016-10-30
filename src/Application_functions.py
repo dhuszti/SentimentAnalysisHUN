@@ -37,7 +37,7 @@ p2isoFilePath = homeFolder + '/SentimentAnalysisHUN-master/resources/Typo/p2iso'
 
 def MorphAnalysis(inputString):
 	# typoing to correct some basic user input errors
-	cmd = 'echo ' + inputString.encode('utf8') + ' | ' + ekitoFilePath + ' | ' + p2isoFilePath + ' | iconv -f latin2 -t latin2'		
+	cmd = 'echo ' + inputString.encode('latin2') + ' | ' + ekitoFilePath + ' | ' + p2isoFilePath		
 	p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 	(typo_out, err) = p.communicate()
 	
