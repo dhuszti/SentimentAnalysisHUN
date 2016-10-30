@@ -125,7 +125,7 @@ def main():
 	print "\033[0;32m Please use sentence tag for adding user input. Example {\"sentence\": \"Teszt mondat\"} \033[0m"
 	print ""
 	print "\033[0;32m Tool has two different HTTP POST request:\033[0m"
-	print "\033[0;32m	/sentiment: 		for overall score  \033[0m"
+	print "\033[0;32m	/sentiment: 	for overall score  \033[0m"
 	print "\033[0;32m	/sentiment_verbose: for more detailed scores \033[0m"
 	print ""
 	print "\033[0;32m Usage example from Linux/Mac console with curl: \033[0m"
