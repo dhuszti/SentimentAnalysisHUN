@@ -27,8 +27,8 @@ Docker container installation is suggested.
 - Receive an url (substitute to example): `http://ip_addr_of_docker:5000/sentiment`
 - Please use sentence tag for adding input like this `{'sentence': '<write your input here>'}` to enter your input.
 - Tool has two different HTTP POST requests:
-	-`/sentiment`: 	for overall score
-	-`/sentiment_verbose`: for more detailed scores
+	- `/sentiment`: 	for overall score
+	- `/sentiment_verbose`: for more detailed scores
 - Example usage on Linux/Mac with console curl: `curl -i -H "Content-Type: application/json" -X POST -d '{"sentence": "Budapest az egyik legszebb város."}' http://<ip_of_your_machine>:5000/sentiment`
 - For Windows use a REST client like https://github.com/wiztools/rest-client
 
