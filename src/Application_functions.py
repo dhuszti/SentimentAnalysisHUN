@@ -30,10 +30,7 @@ szegedmodelFilePath = homeFolder + '/SentimentAnalysisHUN-master/resources/HunPo
 ocamorphFilePath = homeFolder + '/SentimentAnalysisHUN-master/resources/HunMorph/morphdb.hu/morphdb_hu.bin'
 posFilePath = '/tmp/SentimentAnalysis_pos.txt'
 morphFilePath = '/tmp/SentimentAnalysis_morph.txt'
-ekitoFilePath = homeFolder + '/SentimentAnalysisHUN-master/resources/Typo/ekezo/ekito.run'
-p2isoFilePath = homeFolder + '/SentimentAnalysisHUN-master/resources/Typo/p2iso'
 
-	
 
 def MorphAnalysis(inputString):
 	# part-of-speech tagging on input
