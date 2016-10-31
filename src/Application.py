@@ -129,7 +129,7 @@ def main():
 	print "\033[0;32m	/sentiment_verbose: for more detailed scores \033[0m"
 	print ""
 	print "\033[0;32m Usage example from Linux/Mac console with curl: \033[0m"
-	print "\033[0;32m curl -i -H 'Content-Type: application/json' -X POST -d '{\"sentence\": \"Budapest az egyik legszebb város.\"}' http://"+ip_addr+":5000/sentiment \033[0m"
+	print "\033[0;32m curl -i -H 'Content-Type: application/json' -X POST -d '{\"sentence\": \"Ide írja a teszt mondatot.\"}' http://"+ip_addr+":5000/sentiment \033[0m"
 	print ""
 	print "\033[0;32m For Windows use an REST client like https://github.com/wiztools/rest-client \033[0m"
 	print "\033[0;32m ****************************************************************************** \033[0m"
