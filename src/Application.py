@@ -137,6 +137,7 @@ def main():
 
 	# run application
 	try:
+		app.config['JSON_AS_ASCII'] = False
 		app.run(host=ip_addr, port=5000)
 	except Exception:
 		logger.error("Exception occurred while started running application")
