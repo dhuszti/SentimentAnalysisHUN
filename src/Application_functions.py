@@ -36,18 +36,13 @@ p2isoFilePath = homeFolder + '/SentimentAnalysisHUN-master/resources/Typo/p2iso'
 	
 
 def MorphAnalysis(inputString):
-	# typoing to correct some basic user input errors
-	cmd = 'echo ' + inputString.encode('latin2') + ' | ' + ekitoFilePath + ' | ' + p2isoFilePath		
-	p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-	(typo_out, err) = p.communicate()
-	
-	# part-of-speech tagging on typoed input
-	cmd = 'echo ' + typo_out + ' | huntoken | ' + xmlparserFilePath + ' | ' + hunpostagFilePath + ' ' + szegedmodelFilePath + ' > ' + posFilePath
+	# part-of-speech tagging on input
+	cmd = 'echo ' + inputString.encode('latin2') + ' | huntoken | ' + xmlparserFilePath + ' | ' + hunpostagFilePath + ' ' + szegedmodelFilePath + ' > ' + posFilePath
 	p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 	(pos_out, err) = p.communicate()
 	
-	# morphological analysis on typoed input
-	cmd = 'echo ' + typo_out + ' | huntoken | ' + xmlparserFilePath + ' | ocamorph --bin ' + ocamorphFilePath + ' > ' + morphFilePath			
+	# morphological analysis on input
+	cmd = 'echo ' + inputString.encode('latin2') + ' | huntoken | ' + xmlparserFilePath + ' | ocamorph --bin ' + ocamorphFilePath + ' > ' + morphFilePath			
 	p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 	(morph_out, err) = p.communicate()
 
@@ -105,7 +100,7 @@ def OverallSentiment(inputString, morphAnalyzed, sentimentList):
 	(sent, negProb, posProb) = SentimentScore(morphAnalyzed)
 	
 	overallScore = {
-		'sentence': inputString,
+		'input sentence': inputString,
 		'sentiment': sent,
 		'negative probability': negProb,
 		'positive probalitiy': posProb,
