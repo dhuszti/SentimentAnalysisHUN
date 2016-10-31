@@ -6,8 +6,8 @@ This is open-source sentiment analysis tool for Hungarian language, written in P
 Docker container installation is suggested.
 ###1. Native way
 - Prerequisite: linux Operation System
-	- Ubuntu 14.04 or plus is supported
-	- Support for Debian, RHEL, CentOS coming very soon
+	- Ubuntu, tested for only 14.04 LTS
+	- Debian, RHEL, CentOS done, but not yet tested for more distributions
 - Launch `./install.sh` as root privileged user and accept every step of installation.					
 - Takes about 20-30 minutes
 	
