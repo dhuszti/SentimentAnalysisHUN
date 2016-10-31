@@ -15,7 +15,7 @@ Docker container installation is suggested.
 - Install Docker for you Operation System: (https://docs.docker.com/engine/installation)
 - Docker repo: (https://hub.docker.com/r/dhuszti/sentanalysis/)
 - Download container: `docker pull dhuszti/sentanalysis`
-- Run container: `docker run -d -it --privileged=true --net=host --name=sentanalysishun dhuszti/sentanalysis`
+- Run container: `docker run -d -it --privileged=true --net=host -e LANG=C.UTF-8 --name=sentanalysishun dhuszti/sentanalysis`
 
 ##Usage:
 ###1. Launch application with: 
